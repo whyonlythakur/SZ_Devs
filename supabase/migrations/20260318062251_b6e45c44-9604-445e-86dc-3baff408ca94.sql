@@ -1,0 +1,1 @@
+CREATE POLICY "Access codes are publicly readable" ON public.access_codes FOR SELECT USING (true);
