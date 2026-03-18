@@ -43,6 +43,8 @@ export function CodeDetailPageClient({ codeId }: CodeDetailPageClientProps) {
     Advanced: 'bg-red-500/10 text-red-300',
   };
 
+  const displayCodeNumber = code.accessCode?.includes('#') ? code.accessCode.split('#').pop() : code.accessCode;
+
   return (
     <>
       <Navbar />
@@ -75,7 +77,7 @@ export function CodeDetailPageClient({ codeId }: CodeDetailPageClientProps) {
               <div className="flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
                 <div></div>
 
-                {code.accessCode && code.googleDriveLink && (
+                {code.accessCode && (
                   <button
                     onClick={() => setShowAccessModal(true)}
                     className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:shadow-lg hover:shadow-primary/30"
@@ -83,7 +85,7 @@ export function CodeDetailPageClient({ codeId }: CodeDetailPageClientProps) {
                     <Lock className="h-4 w-4" />
                     Download Files
                     <span className="ml-1 rounded bg-primary-foreground/20 px-1.5 py-0.5 text-xs text-primary-foreground">
-                      #{code.accessCode.replace('Code#', '')}
+                      #{displayCodeNumber}
                     </span>
                   </button>
                 )}
@@ -148,14 +150,12 @@ export function CodeDetailPageClient({ codeId }: CodeDetailPageClientProps) {
           </div>
         </div>
 
-        {code.accessCode && code.googleDriveLink && (
+        {code.accessCode && (
           <AccessCodeModal
             isOpen={showAccessModal}
             onClose={() => setShowAccessModal(false)}
-            correctCode={code.accessCode}
-            filelink={code.googleDriveLink}
             codeTitle={code.title}
-            codeNumber={code.accessCode.replace('Code#', '')}
+            codeNumber={displayCodeNumber}
           />
         )}
       </div>
