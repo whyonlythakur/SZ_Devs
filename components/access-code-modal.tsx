@@ -1,47 +1,117 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Lock, X } from 'lucide-react';
+import { supabase } from '@/src/integrations/supabase/client';
 
 interface AccessCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  correctCode: string;
-  filelink: string;
   codeTitle: string;
   codeNumber?: string;
+  botId?: string;
+  // Keep these as fallbacks for codes not in the database
+  correctCode?: string;
+  filelink?: string;
 }
 
 export function AccessCodeModal({
   isOpen,
   onClose,
-  correctCode,
-  filelink,
   codeTitle,
   codeNumber,
+  botId,
+  correctCode,
+  filelink,
 }: AccessCodeModalProps) {
   const [inputCode, setInputCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const inputCodeRef = useRef(inputCode);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    inputCodeRef.current = inputCode;
+  }, [inputCode]);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    // Simulate a brief delay for better UX
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const enteredCode = inputCodeRef.current.trim().toUpperCase();
 
-    if (inputCode.trim().toUpperCase() === correctCode.toUpperCase()) {
-      // Redirect to Google Drive
-      window.open(filelink, '_blank');
-      setInputCode('');
-      onClose();
-    } else {
-      setError('Invalid access code. Please try again.');
+    try {
+      // Query the database for a matching active access code
+      const { data, error: dbError } = await supabase
+        .from('access_codes')
+        .select('code, is_active, expiry_date, bot_id, bots(file_url)')
+        .eq('is_active', true)
+        .ilike('code', enteredCode)
+        .maybeSingle();
+
+      if (dbError) {
+        console.error('Database error:', dbError);
+        // Fall back to hardcoded validation
+        if (correctCode && enteredCode === correctCode.toUpperCase()) {
+          if (filelink) {
+            window.open(filelink, '_blank');
+            setInputCode('');
+            onClose();
+          }
+        } else {
+          setError('Invalid access code. Please try again.');
+        }
+        setLoading(false);
+        return;
+      }
+
+      if (data) {
+        // Check expiry
+        if (data.expiry_date && new Date(data.expiry_date) < new Date()) {
+          setError('This access code has expired.');
+          setLoading(false);
+          return;
+        }
+
+        // Get the file URL from the related bot
+        const botData = data.bots as any;
+        const downloadUrl = botData?.file_url;
+
+        if (downloadUrl) {
+          window.open(downloadUrl, '_blank');
+          setInputCode('');
+          onClose();
+        } else {
+          setError('Download link not found for this code.');
+        }
+      } else {
+        // No match in database, try fallback
+        if (correctCode && enteredCode === correctCode.toUpperCase()) {
+          if (filelink) {
+            window.open(filelink, '_blank');
+            setInputCode('');
+            onClose();
+          }
+        } else {
+          setError('Invalid access code. Please try again.');
+        }
+      }
+    } catch (err) {
+      console.error('Verification error:', err);
+      // Fallback to hardcoded
+      if (correctCode && enteredCode === correctCode.toUpperCase()) {
+        if (filelink) {
+          window.open(filelink, '_blank');
+          setInputCode('');
+          onClose();
+        }
+      } else {
+        setError('Invalid access code. Please try again.');
+      }
     }
+
     setLoading(false);
-  };
+  }, [correctCode, filelink, onClose]);
 
   if (!isOpen) return null;
 
@@ -82,7 +152,7 @@ export function AccessCodeModal({
                 setInputCode(e.target.value);
                 setError('');
               }}
-              placeholder="e.g., REACT001"
+              placeholder="e.g., Code#001"
               className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder-muted-foreground transition-smooth focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={loading}
               autoFocus
