@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Lock, X } from 'lucide-react';
-import { supabase } from '@/src/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface AccessCodeModalProps {
   isOpen: boolean;
