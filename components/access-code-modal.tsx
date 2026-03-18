@@ -16,7 +16,7 @@ export function AccessCodeModal({
   isOpen,
   onClose,
   correctCode,
-  driveLink,
+  filelink,
   codeTitle,
   codeNumber,
 }: AccessCodeModalProps) {
