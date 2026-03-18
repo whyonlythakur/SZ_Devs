@@ -124,7 +124,7 @@ export function AccessCodeModal({
                 setInputCode(e.target.value);
                 setError('');
               }}
-              placeholder="e.g., Music#001"
+              placeholder="e.g., Code#000"
               className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder-muted-foreground transition-smooth focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={loading}
               autoFocus
