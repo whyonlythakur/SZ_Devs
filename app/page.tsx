@@ -16,14 +16,17 @@ export default function Home() {
   useEffect(() => {
     async function fetchYouTubeStats() {
       try {
-        const response = await fetch('/api/youtube-stats');
-        const data = await response.json();
+        const YOUTUBE_API_KEY = 'AIzaSyCJXtZQT-6OI2vjNTLZhlNR5qiZcUHZq7A';
+        const CHANNEL_HANDLE = '@whyonlythakur';
+        const response = await fetch(
+          `https://www.googleapis.com/youtube/v3/channels?forHandle=${CHANNEL_HANDLE}&part=statistics&key=${YOUTUBE_API_KEY}`
+        );
+        const channelData = await response.json();
         
-        if (data.subscribers !== undefined) {
-          // Filter to only show codes that are visible on the website
+        if (channelData.items && channelData.items.length > 0) {
+          const stats = channelData.items[0].statistics;
           const visibleCodes = codes.filter((code) => code.id === 1);
           const codeSnippets = visibleCodes.length;
-          const totalViews = codes.reduce((sum, code) => sum + code.views, 0);
           
           const formatNumber = (num: number) => {
             if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -33,9 +36,9 @@ export default function Home() {
           
           setStats([
             { value: codeSnippets.toString(), label: 'Code Snippets', description: 'Ready to use' },
-            { value: formatNumber(data.totalViews), label: 'Total Views', description: 'On our channel' },
-            { value: formatNumber(data.subscribers), label: 'Community', description: 'Subscribers' },
-            { value: data.videoCount.toString(), label: 'Tutorials', description: 'On YouTube' },
+            { value: formatNumber(parseInt(stats.viewCount || '0')), label: 'Total Views', description: 'On our channel' },
+            { value: formatNumber(parseInt(stats.subscriberCount || '0')), label: 'Community', description: 'Subscribers' },
+            { value: stats.videoCount || '0', label: 'Tutorials', description: 'On YouTube' },
           ]);
         }
       } catch (error) {
