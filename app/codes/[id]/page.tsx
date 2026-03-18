@@ -80,7 +80,7 @@ export default function CodeDetailPage() {
               <div className="flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
                 <div></div>
 
-                {code.accessCode && code.filelink && (
+                {code.accessCode && code.googleDriveLink && (
                   <button
                     onClick={() => setShowAccessModal(true)}
                     className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:shadow-lg hover:shadow-primary/30"
@@ -155,12 +155,12 @@ export default function CodeDetailPage() {
         </div>
 
         {/* Access Code Modal */}
-        {code.accessCode && code.filelink && (
+        {code.accessCode && code.googleDriveLink && (
           <AccessCodeModal
             isOpen={showAccessModal}
             onClose={() => setShowAccessModal(false)}
             correctCode={code.accessCode}
-            filelink={code.filelink}
+            filelink={code.googleDriveLink}
             codeTitle={code.title}
             codeNumber={code.accessCode.replace('Code#', '')}
           />
