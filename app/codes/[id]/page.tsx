@@ -7,13 +7,14 @@ export function generateStaticParams() {
 }
 
 interface CodeDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function CodeDetailPage({ params }: CodeDetailPageProps) {
-  const codeId = Number(params.id);
+export default async function CodeDetailPage({ params }: CodeDetailPageProps) {
+  const { id } = await params;
+  const codeId = Number(id);
   const code = codes.find((c) => c.id === codeId);
 
   if (!code) {
