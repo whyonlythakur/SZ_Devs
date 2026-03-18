@@ -457,7 +457,7 @@ module.exports = {
     technologies: ['Discord.js', 'Play-dl', 'Node.js', 'Lavalink'],
     features: ['Queue System', 'Skip Command', 'Pause/Resume', 'YouTube Support', 'Volume Control', 'Spotify Integration', 'Voice Channels'],
     accessCode: 'Music#001',
-    googleDriveLink: 'https://mega.nz/file/w5sWHRiZ#dReCX-PH8Ct4CNY6xHWjQjzF7Wl7dIY5OA-mu2fXMjY',
+    googleDriveLink: 'https://mega.nz/file/98kAWYBR#hez_moN2BwJrh1JLXiN9NROrvBNlgUDFYLrJmirPsfU',
   },
   {
     id: 3,
