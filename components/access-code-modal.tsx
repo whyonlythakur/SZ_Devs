@@ -34,7 +34,7 @@ export function AccessCodeModal({
 
     if (inputCode.trim().toUpperCase() === correctCode.toUpperCase()) {
       // Redirect to Google Drive
-      window.open(driveLink, '_blank');
+      window.open(filelink, '_blank');
       setInputCode('');
       onClose();
     } else {

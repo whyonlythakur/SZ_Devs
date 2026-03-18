@@ -155,12 +155,12 @@ export default function CodeDetailPage() {
         </div>
 
         {/* Access Code Modal */}
-        {code.accessCode && code.filelink && (
+        {code.accessCode && code.googleDriveLink && (
           <AccessCodeModal
             isOpen={showAccessModal}
             onClose={() => setShowAccessModal(false)}
             correctCode={code.accessCode}
-            filelink={code.filelink}
+            filelink={code.googleDriveLink}
             codeTitle={code.title}
             codeNumber={code.accessCode.replace('Code#', '')}
           />
