@@ -2,14 +2,14 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Lock, X } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 
 interface AccessCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
   codeTitle: string;
   codeNumber?: string;
-  botId?: string;
+  expectedAccessCode: string;
+  filelink: string;
 }
 
 export function AccessCodeModal({
@@ -17,73 +17,31 @@ export function AccessCodeModal({
   onClose,
   codeTitle,
   codeNumber,
-  botId,
+  expectedAccessCode,
+  filelink,
 }: AccessCodeModalProps) {
   const [inputCode, setInputCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const inputCodeRef = useRef(inputCode);
 
-  useEffect(() => {
-    inputCodeRef.current = inputCode;
-  }, [inputCode]);
-
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    const enteredCode = inputCodeRef.current.trim().toUpperCase();
+    const enteredCode = inputCode.trim().toUpperCase();
+    const expected = expectedAccessCode.trim().toUpperCase();
 
-    try {
-      let query = supabase
-        .from('access_codes')
-        .select('code, is_active, expiry_date, bot_id, bots(file_url)')
-        .eq('is_active', true)
-        .ilike('code', enteredCode);
-
-      if (botId) {
-        query = query.eq('bot_id', botId);
-      }
-
-      const { data, error: dbError } = await query.maybeSingle();
-
-      if (dbError) {
-        console.error('Database error:', dbError);
-        setError('Unable to verify access code right now. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      if (!data) {
-        setError('Invalid access code. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      if (data.expiry_date && new Date(data.expiry_date) < new Date()) {
-        setError('This access code has expired.');
-        setLoading(false);
-        return;
-      }
-
-      const botData = data.bots as { file_url?: string } | null;
-      const downloadUrl = botData?.file_url;
-
-      if (downloadUrl) {
-        window.open(downloadUrl, '_blank');
-        setInputCode('');
-        onClose();
-      } else {
-        setError('Download link not found for this code.');
-      }
-    } catch (err) {
-      console.error('Verification error:', err);
-      setError('Unable to verify access code right now. Please try again.');
+    if (enteredCode === expected) {
+      window.open(filelink, '_blank');
+      setInputCode('');
+      onClose();
+    } else {
+      setError('Invalid access code. Please try again.');
     }
 
     setLoading(false);
-  }, [botId, onClose]);
+  }, [inputCode, expectedAccessCode, filelink, onClose]);
 
   if (!isOpen) return null;
 
@@ -124,7 +82,7 @@ export function AccessCodeModal({
                 setInputCode(e.target.value);
                 setError('');
               }}
-              placeholder="e.g., Music#001"
+              placeholder="e.g., DISCORD-MUSIC-001"
               className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder-muted-foreground transition-smooth focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={loading}
               autoFocus
