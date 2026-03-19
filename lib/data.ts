@@ -21,7 +21,7 @@ export interface Code {
   technologies?: string[];
   features?: string[];
   accessCode?: string;
-  googleDriveLink?: string;
+  filelink?: string;
 }
 
 export interface CategoryGroup {
