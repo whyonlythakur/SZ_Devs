@@ -211,7 +211,7 @@ module.exports = {
     technologies: ['Discord.js', 'Play-dl', 'Node.js'],
     features: ['Queue System', 'Skip Command', 'Pause/Resume', 'YouTube Support', 'Volume Control'],
     accessCode: 'DISCORD-MUSIC-001',
-    filelink: 'https://mega.nz/file/w5sWHRiZ#dReCX-PH8Ct4CNY6xHWjQjzF7Wl7dIY5OA-mu2fXMjY',
+    filelink: 'https://mega.nz/file/98kAWYBR#hez_moN2BwJrh1JLXiN9NROrvBNlgUDFYLrJmirPsfU',
   },
   {
     id: 3,
