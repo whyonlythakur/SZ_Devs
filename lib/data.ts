@@ -21,7 +21,7 @@ export interface Code {
   technologies?: string[];
   features?: string[];
   accessCode?: string;
-  googleDriveLink?: string;
+  filelink?: string;
 }
 
 export interface CategoryGroup {
@@ -172,7 +172,7 @@ module.exports = {
     technologies: ['Discord.js', 'JavaScript', 'Node.js'],
     features: ['Ban Command', 'Kick Command', 'Timeout System', 'Reason Logging', 'User Checks'],
     accessCode: 'DISCORD-MOD-001',
-    googleDriveLink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
+    filelink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
   },
   {
     id: 1,
@@ -457,7 +457,7 @@ module.exports = {
     technologies: ['Discord.js', 'Play-dl', 'Node.js', 'Lavalink'],
     features: ['Queue System', 'Skip Command', 'Pause/Resume', 'YouTube Support', 'Volume Control', 'Spotify Integration', 'Voice Channels'],
     accessCode: 'Music#001',
-    googleDriveLink: 'https://mega.nz/file/98kAWYBR#hez_moN2BwJrh1JLXiN9NROrvBNlgUDFYLrJmirPsfU',
+    filelink: 'https://mega.nz/file/w5sWHRiZ#dReCX-PH8Ct4CNY6xHWjQjzF7Wl7dIY5OA-mu2fXMjY',
   },
   {
     id: 3,
@@ -505,7 +505,7 @@ export default function Portfolio() {
     technologies: ['Next.js', 'TypeScript', 'Tailwind CSS'],
     features: ['Dark Mode', 'Responsive Design', 'Animations', 'SEO Optimized', 'Fast Performance'],
     accessCode: 'PORTFOLIO-NEXTJS-001',
-    googleDriveLink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
+    filelink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
   },
   {
     id: 4,
@@ -552,7 +552,7 @@ module.exports = {
     technologies: ['Discord.js', 'JavaScript'],
     features: ['User Info', 'Server Stats', 'Embeds', 'Options'],
     accessCode: 'DISCORD-UTIL-001',
-    googleDriveLink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
+    filelink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
   },
   {
     id: 5,
@@ -601,7 +601,7 @@ module.exports = {
     technologies: ['React', 'TypeScript', 'Tailwind CSS'],
     features: ['Hero Section', 'Feature Grid', 'Animations', 'Responsive', 'Modern Design'],
     accessCode: 'LANDING-PAGE-001',
-    googleDriveLink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
+    filelink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
   },
   {
     id: 6,
@@ -645,7 +645,7 @@ module.exports = { checkSpam };`,
     technologies: ['Discord.js', 'JavaScript', 'Node.js'],
     features: ['Spam Detection', 'Rate Limiting', 'Auto Moderation', 'User Tracking'],
     accessCode: 'DISCORD-SEC-001',
-    googleDriveLink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
+    filelink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
   },
   {
     id: 7,
@@ -694,7 +694,7 @@ export default function Dashboard() {
     technologies: ['React', 'Recharts', 'TypeScript'],
     features: ['Charts', 'Analytics', 'Real-time Data', 'Responsive Tables', 'Exports'],
     accessCode: 'DASHBOARD-001',
-    googleDriveLink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
+    filelink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
   },
   {
     id: 8,
@@ -742,7 +742,7 @@ module.exports = Economy;`,
     technologies: ['Discord.js', 'JavaScript', 'Database'],
     features: ['Currency System', 'Shop', 'Leaderboard', 'Persistence', 'Trading'],
     accessCode: 'DISCORD-ECON-001',
-    googleDriveLink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
+    filelink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
   },
   {
     id: 9,
@@ -783,6 +783,6 @@ module.exports = {
     technologies: ['Discord.js', 'JavaScript'],
     features: ['Jokes', 'Games', 'Random Events', 'Emojis', 'Reactions'],
     accessCode: 'DISCORD-FUN-001',
-    googleDriveLink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
+    filelink: 'https://drive.google.com/drive/folders/1aLdimd1QFSOhbXHlDP7F7iJuBan9eJnU',
   },
 ];

@@ -150,12 +150,14 @@ export function CodeDetailPageClient({ codeId }: CodeDetailPageClientProps) {
           </div>
         </div>
 
-        {code.accessCode && (
+        {code.accessCode && code.filelink && (
           <AccessCodeModal
             isOpen={showAccessModal}
             onClose={() => setShowAccessModal(false)}
             codeTitle={code.title}
             codeNumber={displayCodeNumber}
+            expectedAccessCode={code.accessCode}
+            filelink={code.filelink}
           />
         )}
       </div>
