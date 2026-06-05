@@ -14,34 +14,70 @@ export type Database = {
   }
   public: {
     Tables: {
-      access_codes: {
+      audit_log: {
         Row: {
-          bot_id: string | null
-          code: string
+          action: string
+          actor_discord_id: string | null
+          actor_role: Database["public"]["Enums"]["staff_role"] | null
           created_at: string
-          expiry_date: string | null
-          id: string
-          is_active: boolean
+          id: number
+          payload: Json | null
+          target_id: string | null
+          target_type: string | null
         }
         Insert: {
-          bot_id?: string | null
-          code: string
+          action: string
+          actor_discord_id?: string | null
+          actor_role?: Database["public"]["Enums"]["staff_role"] | null
           created_at?: string
-          expiry_date?: string | null
-          id?: string
-          is_active?: boolean
+          id?: number
+          payload?: Json | null
+          target_id?: string | null
+          target_type?: string | null
         }
         Update: {
-          bot_id?: string | null
+          action?: string
+          actor_discord_id?: string | null
+          actor_role?: Database["public"]["Enums"]["staff_role"] | null
+          created_at?: string
+          id?: number
+          payload?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
+      bot_files: {
+        Row: {
+          bot_id: number
+          code: string
+          created_at: string
+          id: number
+          language: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          bot_id: number
+          code: string
+          created_at?: string
+          id?: number
+          language: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          bot_id?: number
           code?: string
           created_at?: string
-          expiry_date?: string | null
-          id?: string
-          is_active?: boolean
+          id?: number
+          language?: string
+          name?: string
+          sort_order?: number
         }
         Relationships: [
           {
-            foreignKeyName: "access_codes_bot_id_fkey"
+            foreignKeyName: "bot_files_bot_id_fkey"
             columns: ["bot_id"]
             isOneToOne: false
             referencedRelation: "bots"
@@ -51,64 +87,114 @@ export type Database = {
       }
       bots: {
         Row: {
+          access_code: string | null
+          banner_image: string | null
           category: string
-          code_number: string
-          commands: string[] | null
           created_at: string
+          created_by: string | null
           description: string
-          env_requirements: string[] | null
-          features: string[] | null
-          file_url: string | null
+          difficulty: string | null
+          featured: boolean
+          features: string[]
+          filelink: string | null
           full_description: string | null
-          id: string
-          image_url: string | null
-          language: string
-          library: string
-          name: string
-          setup_instructions: string | null
+          id: number
+          is_visible: boolean
+          language: string | null
+          likes: number
+          subcategory: string | null
+          technologies: string[]
+          title: string
           updated_at: string
-          youtube_embed_url: string | null
-          youtube_url: string | null
+          views: number
         }
         Insert: {
-          category?: string
-          code_number: string
-          commands?: string[] | null
+          access_code?: string | null
+          banner_image?: string | null
+          category: string
           created_at?: string
+          created_by?: string | null
           description: string
-          env_requirements?: string[] | null
-          features?: string[] | null
-          file_url?: string | null
+          difficulty?: string | null
+          featured?: boolean
+          features?: string[]
+          filelink?: string | null
           full_description?: string | null
-          id?: string
-          image_url?: string | null
-          language?: string
-          library?: string
-          name: string
-          setup_instructions?: string | null
+          id?: number
+          is_visible?: boolean
+          language?: string | null
+          likes?: number
+          subcategory?: string | null
+          technologies?: string[]
+          title: string
           updated_at?: string
-          youtube_embed_url?: string | null
-          youtube_url?: string | null
+          views?: number
         }
         Update: {
+          access_code?: string | null
+          banner_image?: string | null
           category?: string
-          code_number?: string
-          commands?: string[] | null
           created_at?: string
+          created_by?: string | null
           description?: string
-          env_requirements?: string[] | null
-          features?: string[] | null
-          file_url?: string | null
+          difficulty?: string | null
+          featured?: boolean
+          features?: string[]
+          filelink?: string | null
           full_description?: string | null
-          id?: string
-          image_url?: string | null
-          language?: string
-          library?: string
-          name?: string
-          setup_instructions?: string | null
+          id?: number
+          is_visible?: boolean
+          language?: string | null
+          likes?: number
+          subcategory?: string | null
+          technologies?: string[]
+          title?: string
           updated_at?: string
-          youtube_embed_url?: string | null
-          youtube_url?: string | null
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bots_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["discord_id"]
+          },
+        ]
+      }
+      staff_users: {
+        Row: {
+          avatar: string | null
+          created_at: string
+          discord_id: string
+          frozen_at: string | null
+          frozen_by: string | null
+          is_frozen: boolean
+          role: Database["public"]["Enums"]["staff_role"]
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string
+          discord_id: string
+          frozen_at?: string | null
+          frozen_by?: string | null
+          is_frozen?: boolean
+          role: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string
+          discord_id?: string
+          frozen_at?: string | null
+          frozen_by?: string | null
+          is_frozen?: boolean
+          role?: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
+          username?: string
         }
         Relationships: []
       }
@@ -120,7 +206,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      staff_role: "founder" | "ceo" | "coo" | "cto"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -247,6 +333,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      staff_role: ["founder", "ceo", "coo", "cto"],
+    },
   },
 } as const
