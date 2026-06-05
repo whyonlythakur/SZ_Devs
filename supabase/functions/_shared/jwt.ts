@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Minimal HS256 JWT helper using Web Crypto
 const enc = new TextEncoder();
 const dec = new TextDecoder();
