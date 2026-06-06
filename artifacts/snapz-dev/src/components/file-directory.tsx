@@ -9,66 +9,55 @@ interface FileDirectoryProps {
 export function FileDirectory({ files }: FileDirectoryProps) {
   const [expandedFiles, setExpandedFiles] = useState<string[]>([]);
 
-  const toggleFile = (fileName: string) => {
+  const toggle = (name: string) =>
     setExpandedFiles((prev) =>
-      prev.includes(fileName)
-        ? prev.filter((f) => f !== fileName)
-        : [...prev, fileName]
+      prev.includes(name) ? prev.filter((f) => f !== name) : [...prev, name]
     );
-  };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
-      <h2 className="mb-6 text-xl font-bold text-foreground">Project Files</h2>
+    <div className="rounded-lg border border-[#1E3A5F]/40 bg-[#111] p-6">
+      <h2 className="mb-6 text-xl font-bold text-white">Project Files</h2>
 
       <div className="space-y-2">
         {files.map((file) => {
           const isExpanded = expandedFiles.includes(file.name);
-          const fileLines = file.code.split('\n').length;
+          const lines = file.code.split('\n').length;
 
           return (
             <div key={file.name} className="animate-fadeInUp">
               <button
-                onClick={() => toggleFile(file.name)}
-                className="w-full flex items-center gap-3 rounded-lg border border-border/50 bg-secondary/30 px-4 py-3 text-left transition-smooth hover:border-primary/50 hover:bg-secondary/50"
+                onClick={() => toggle(file.name)}
+                className="w-full flex items-center gap-3 rounded-lg border border-[#1E3A5F]/50 bg-[#0d1a2d]/40 px-4 py-3 text-left transition-all hover:border-[#3A8FD4]/40 hover:bg-[#1E3A5F]/20"
               >
                 <div className="flex items-center gap-2">
-                  {isExpanded ? (
-                    <ChevronDown className="h-4 w-4 text-primary" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  )}
-                  <File className="h-4 w-4 text-accent" />
+                  {isExpanded
+                    ? <ChevronDown className="h-4 w-4 text-[#5BB8F5]" />
+                    : <ChevronRight className="h-4 w-4 text-gray-500" />}
+                  <File className="h-4 w-4 text-[#3A8FD4]" />
                 </div>
-
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-foreground">{file.name}</span>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                    <span className="font-semibold text-white">{file.name}</span>
+                    <span className="text-xs border border-[#1E3A5F] bg-[#1E3A5F]/30 text-[#5BB8F5] px-2 py-0.5 rounded">
                       {file.language}
                     </span>
                   </div>
                 </div>
-
-                <span className="text-xs text-muted-foreground">
-                  {fileLines} lines
-                </span>
+                <span className="text-xs text-gray-500">{lines} lines</span>
               </button>
 
               {isExpanded && (
-                <div className="mt-2 ml-4 rounded-lg border border-border/30 bg-background/50 p-4 overflow-hidden animate-slideInFromLeft">
-                  <div className="font-mono text-xs text-muted-foreground leading-relaxed max-h-96 overflow-y-auto">
+                <div className="mt-2 ml-4 rounded-lg border border-[#1E3A5F]/30 bg-[#0A0A0A]/80 p-4 overflow-hidden animate-slideInFromLeft">
+                  <div className="font-mono text-xs leading-relaxed max-h-96 overflow-y-auto">
                     {file.code.split('\n').slice(0, 15).map((line, idx) => (
                       <div key={idx} className="flex gap-3">
-                        <span className="min-w-8 text-right text-muted-foreground/50 select-none">
-                          {idx + 1}
-                        </span>
-                        <span className="text-foreground/80">{line || ' '}</span>
+                        <span className="min-w-8 text-right text-gray-600 select-none">{idx + 1}</span>
+                        <span className="text-gray-300">{line || ' '}</span>
                       </div>
                     ))}
-                    {fileLines > 15 && (
-                      <div className="mt-2 text-center text-muted-foreground text-xs py-2">
-                        ... and {fileLines - 15} more lines
+                    {lines > 15 && (
+                      <div className="mt-2 text-center text-gray-500 text-xs py-2">
+                        … and {lines - 15} more lines
                       </div>
                     )}
                   </div>
@@ -79,9 +68,9 @@ export function FileDirectory({ files }: FileDirectoryProps) {
         })}
       </div>
 
-      <div className="mt-6 rounded-lg bg-accent/5 border border-accent/20 p-4">
-        <p className="text-xs text-muted-foreground">
-          <span className="font-semibold text-accent">Note:</span> Click on any file to preview its contents. To download all files, click the "Download Files" button and enter your access code.
+      <div className="mt-6 rounded-lg border border-[#1E3A5F]/30 bg-[#1E3A5F]/10 p-4">
+        <p className="text-xs text-gray-500">
+          <span className="font-semibold text-[#5BB8F5]">Note:</span> Click any file to preview its contents. Use "Download Files" and enter your access code to get all files.
         </p>
       </div>
     </div>

@@ -19,11 +19,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#1a0800] to-[#2d0e00] p-4">
-      <div className="max-w-md w-full bg-white/5 border border-orange-900/30 rounded-xl p-8 backdrop-blur">
+    <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] p-4"
+      style={{ backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(58,143,212,0.08) 0%, transparent 60%)' }}>
+      <div className="max-w-md w-full border border-[#1E3A5F] bg-[#111] rounded-xl p-8"
+        style={{ boxShadow: '0 0 40px rgba(58,143,212,0.12)' }}>
         <div className="text-center mb-6">
-          <div className="h-14 w-14 mx-auto rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-2xl font-bold text-white">Z</div>
-          <h1 className="text-2xl font-bold mt-4 text-white">Staff Dashboard</h1>
+          <img src="/logo.png" alt="Snapz Development" className="h-16 w-16 mx-auto rounded-xl object-contain mb-4"
+            style={{ filter: 'drop-shadow(0 0 12px rgba(91,184,245,0.5))' }} />
+          <h1 className="text-2xl font-bold text-white">Staff Dashboard</h1>
           <p className="text-gray-400 mt-2 text-sm">
             Snap-Z staff only. Sign in with Discord to verify your role.
           </p>
@@ -32,7 +35,7 @@ export default function LoginPage() {
         <button
           onClick={login}
           disabled={loading}
-          className="w-full bg-[#5865F2] hover:bg-[#4752c4] disabled:opacity-50 text-white font-medium py-3 rounded-lg transition flex items-center justify-center gap-2"
+          className="w-full border border-[#5865F2]/60 bg-[#5865F2]/10 hover:bg-[#5865F2]/20 disabled:opacity-50 text-[#7289DA] font-medium py-3 rounded-lg transition-all hover:shadow-[0_0_16px_rgba(88,101,242,0.35)] flex items-center justify-center gap-2"
         >
           {loading ? 'Redirecting…' : (
             <>
@@ -44,9 +47,8 @@ export default function LoginPage() {
           )}
         </button>
 
-        {err && <p className="mt-4 text-sm text-red-400">{err}</p>}
-
-        <p className="mt-6 text-xs text-gray-500 text-center">
+        {err && <p className="mt-4 text-sm text-red-400 text-center">{err}</p>}
+        <p className="mt-6 text-xs text-gray-600 text-center">
           You must hold a FOUNDER, CEO, COO, or CTO role in the Snap-Z Discord server.
         </p>
       </div>

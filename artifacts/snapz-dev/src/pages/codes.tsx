@@ -14,37 +14,37 @@ export default function CodesPage() {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    fetchVisibleBots()
-      .then(setCodes)
-      .finally(() => setLoading(false));
+    fetchVisibleBots().then(setCodes).finally(() => setLoading(false));
   }, []);
 
-  const toggleCategory = (categoryId: string) => {
-    const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(categoryId)) newExpanded.delete(categoryId);
-    else newExpanded.add(categoryId);
-    setExpandedCategories(newExpanded);
+  const toggleCategory = (id: string) => {
+    const n = new Set(expandedCategories);
+    n.has(id) ? n.delete(id) : n.add(id);
+    setExpandedCategories(n);
   };
 
-  const filteredCodes = useMemo(() => {
-    return codes.filter((code) => {
-      const matchesSearch =
-        code.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        code.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesSubcategory = !selectedSubcategory || code.subcategory === selectedSubcategory;
-      const matchesDifficulty = !selectedDifficulty || code.difficulty === selectedDifficulty;
-      return matchesSearch && matchesSubcategory && matchesDifficulty;
-    });
-  }, [codes, searchQuery, selectedSubcategory, selectedDifficulty]);
+  const filteredCodes = useMemo(() => codes.filter((c) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      (c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)) &&
+      (!selectedSubcategory || c.subcategory === selectedSubcategory) &&
+      (!selectedDifficulty || c.difficulty === selectedDifficulty)
+    );
+  }), [codes, searchQuery, selectedSubcategory, selectedDifficulty]);
+
+  const activeBtn = 'bg-[#3A8FD4]/20 border border-[#3A8FD4]/60 text-[#5BB8F5] shadow-[0_0_10px_rgba(58,143,212,0.2)]';
+  const inactiveBtn = 'text-gray-400 hover:bg-[#1E3A5F]/20 hover:text-[#5BB8F5]';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0A0A0A]">
       <Navbar />
 
-      <section className="border-b border-border px-4 py-12 sm:px-6 lg:px-8">
+      <section className="border-b border-[#1E3A5F]/40 px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          <h1 className="mb-2 text-4xl font-bold text-foreground sm:text-5xl">Code Snippets</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="mb-2 text-4xl font-bold text-white sm:text-5xl">
+            Code <span className="text-[#5BB8F5]">Snippets</span>
+          </h1>
+          <p className="text-gray-400">
             Browse our collection of {codes.length} carefully curated code tutorials and examples
           </p>
         </div>
@@ -53,20 +53,21 @@ export default function CodesPage() {
       <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 md:grid-cols-4">
+            {/* Sidebar */}
             <div className="space-y-6 md:col-span-1">
               <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">Search</label>
+                <label className="mb-2 block text-sm font-semibold text-gray-300">Search</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                   <input
                     type="text"
                     placeholder="Search snippets..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-card px-3 py-2 pl-9 text-sm text-foreground placeholder-muted-foreground transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full rounded-lg border border-[#1E3A5F] bg-[#111] px-3 py-2 pl-9 text-sm text-white placeholder-gray-600 focus:border-[#3A8FD4] focus:outline-none focus:ring-1 focus:ring-[#3A8FD4]/30 transition-all"
                   />
                   {searchQuery && (
-                    <button onClick={() => setSearchQuery('')} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground" aria-label="Clear search">
+                    <button onClick={() => setSearchQuery('')} className="absolute right-3 top-3 text-gray-500 hover:text-white">
                       <X className="h-4 w-4" />
                     </button>
                   )}
@@ -74,42 +75,36 @@ export default function CodesPage() {
               </div>
 
               <div>
-                <h3 className="mb-3 font-semibold text-foreground">Categories</h3>
-                <div className="space-y-2">
+                <h3 className="mb-3 font-semibold text-gray-300">Categories</h3>
+                <div className="space-y-1">
                   <button
                     onClick={() => { setSelectedSubcategory(null); setExpandedCategories(new Set()); }}
-                    className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${selectedSubcategory === null ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-card hover:text-foreground'}`}
+                    className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-all ${selectedSubcategory === null ? activeBtn : inactiveBtn}`}
                   >
                     All Categories
                   </button>
 
-                  {categories.map((category) => (
-                    <div key={category.id}>
+                  {categories.map((cat) => (
+                    <div key={cat.id}>
                       <button
-                        onClick={() => toggleCategory(category.id)}
-                        className="w-full text-left rounded-lg px-3 py-2 text-sm transition-colors hover:bg-card flex items-center justify-between"
+                        onClick={() => toggleCategory(cat.id)}
+                        className="w-full text-left rounded-lg px-3 py-2 text-sm text-gray-400 hover:bg-[#1E3A5F]/20 hover:text-[#5BB8F5] transition-all flex items-center justify-between"
                       >
-                        <span className="flex items-center gap-2">
-                          <span>{category.icon}</span>
-                          {category.label}
-                        </span>
-                        <ChevronDown className={`h-4 w-4 transition-transform ${expandedCategories.has(category.id) ? 'rotate-180' : ''}`} />
+                        <span className="flex items-center gap-2"><span>{cat.icon}</span>{cat.label}</span>
+                        <ChevronDown className={`h-4 w-4 transition-transform ${expandedCategories.has(cat.id) ? 'rotate-180' : ''}`} />
                       </button>
-
-                      {expandedCategories.has(category.id) && (
-                        <div className="ml-2 mt-1 space-y-1 border-l border-border pl-2">
-                          {category.subcategories.map((sub) => {
+                      {expandedCategories.has(cat.id) && (
+                        <div className="ml-2 mt-1 space-y-1 border-l border-[#1E3A5F]/50 pl-2">
+                          {cat.subcategories.map((sub) => {
                             const count = codes.filter((c) => c.subcategory === sub.id).length;
                             return (
                               <button
                                 key={sub.id}
                                 onClick={() => setSelectedSubcategory(sub.id)}
-                                className={`w-full text-left rounded px-3 py-1.5 text-xs transition-colors ${selectedSubcategory === sub.id ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-card/50'}`}
+                                className={`w-full text-left rounded px-3 py-1.5 text-xs transition-all flex items-center justify-between ${selectedSubcategory === sub.id ? 'text-[#5BB8F5] bg-[#1E3A5F]/30' : 'text-gray-500 hover:text-[#5BB8F5] hover:bg-[#1E3A5F]/20'}`}
                               >
-                                <span className="flex items-center justify-between">
-                                  {sub.label}
-                                  <span className="text-xs opacity-70">({count})</span>
-                                </span>
+                                <span>{sub.label}</span>
+                                <span className="opacity-60">({count})</span>
                               </button>
                             );
                           })}
@@ -121,48 +116,39 @@ export default function CodesPage() {
               </div>
 
               <div>
-                <h3 className="mb-3 font-semibold text-foreground">Difficulty</h3>
-                <div className="space-y-2">
-                  <button
-                    onClick={() => setSelectedDifficulty(null)}
-                    className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${selectedDifficulty === null ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-card hover:text-foreground'}`}
-                  >
+                <h3 className="mb-3 font-semibold text-gray-300">Difficulty</h3>
+                <div className="space-y-1">
+                  <button onClick={() => setSelectedDifficulty(null)}
+                    className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-all ${selectedDifficulty === null ? activeBtn : inactiveBtn}`}>
                     All Levels
                   </button>
-                  {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
-                    <button
-                      key={level}
-                      onClick={() => setSelectedDifficulty(level)}
-                      className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${selectedDifficulty === level ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-card hover:text-foreground'}`}
-                    >
-                      {level}
+                  {['Beginner', 'Intermediate', 'Advanced'].map((lvl) => (
+                    <button key={lvl} onClick={() => setSelectedDifficulty(lvl)}
+                      className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-all ${selectedDifficulty === lvl ? activeBtn : inactiveBtn}`}>
+                      {lvl}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
 
+            {/* Grid */}
             <div className="md:col-span-3">
               {loading ? (
-                <p className="text-muted-foreground">Loading…</p>
+                <p className="text-gray-500">Loading…</p>
               ) : filteredCodes.length > 0 ? (
                 <>
-                  <p className="mb-6 text-sm text-muted-foreground">
-                    Showing {filteredCodes.length} of {codes.length} snippets
-                  </p>
+                  <p className="mb-6 text-sm text-gray-500">Showing {filteredCodes.length} of {codes.length} snippets</p>
                   <div className="grid gap-6 sm:grid-cols-2">
-                    {filteredCodes.map((code) => (
-                      <CodeCard key={code.id} {...code} />
-                    ))}
+                    {filteredCodes.map((code) => <CodeCard key={code.id} {...code} />)}
                   </div>
                 </>
               ) : (
-                <div className="rounded-lg border border-border bg-card p-12 text-center">
-                  <p className="text-muted-foreground">No code snippets found matching your criteria.</p>
+                <div className="rounded-lg border border-[#1E3A5F]/40 bg-[#111] p-12 text-center">
+                  <p className="text-gray-500">No snippets found matching your criteria.</p>
                   <button
                     onClick={() => { setSearchQuery(''); setSelectedSubcategory(null); setSelectedDifficulty(null); setExpandedCategories(new Set()); }}
-                    className="mt-4 text-primary transition-colors hover:text-accent"
-                  >
+                    className="mt-4 text-[#5BB8F5] hover:underline">
                     Clear filters
                   </button>
                 </div>

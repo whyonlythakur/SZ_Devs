@@ -66,7 +66,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Dark-only theme — Snap-Z Development */
+/* Snapz Development — Blue theme */
 :root {
   --button-outline: rgba(255,255,255,.10);
   --badge-outline: rgba(255,255,255,.05);
@@ -74,75 +74,76 @@
   --elevate-1: rgba(255,255,255,.04);
   --elevate-2: rgba(255,255,255,.09);
 
-  /* Background: near-black */
+  /* Background: #0A0A0A deep black */
   --background: 0 0% 4%;
   /* Foreground: white */
-  --foreground: 0 0% 95%;
-  /* Border: dark gray */
-  --border: 0 0% 17%;
+  --foreground: 0 0% 100%;
+  /* Border: #1E3A5F dark blue */
+  --border: 213 51% 24%;
   /* Input border */
-  --input: 0 0% 22%;
-  --ring: 24 100% 50%;
+  --input: 213 51% 30%;
+  /* Ring: primary blue */
+  --ring: 210 65% 52%;
 
-  /* Cards: slightly lighter than background */
+  /* Cards: #111 dark */
   --card: 0 0% 7%;
-  --card-foreground: 0 0% 95%;
-  --card-border: 0 0% 17%;
+  --card-foreground: 0 0% 100%;
+  --card-border: 213 51% 24%;
 
   /* Popovers */
   --popover: 0 0% 7%;
-  --popover-foreground: 0 0% 95%;
-  --popover-border: 0 0% 17%;
+  --popover-foreground: 0 0% 100%;
+  --popover-border: 213 51% 24%;
 
-  /* Primary: #ff6e00 orange */
-  --primary: 24 100% 50%;
+  /* Primary: #3A8FD4 primary blue */
+  --primary: 210 65% 52%;
   --primary-foreground: 0 0% 100%;
 
-  /* Secondary: dark gray */
-  --secondary: 0 0% 10%;
+  /* Secondary: dark navy */
+  --secondary: 213 40% 10%;
   --secondary-foreground: 0 0% 85%;
 
   /* Muted */
-  --muted: 0 0% 10%;
+  --muted: 213 30% 10%;
   --muted-foreground: 0 0% 55%;
 
-  /* Accent: slightly lighter orange */
-  --accent: 28 100% 55%;
-  --accent-foreground: 0 0% 100%;
+  /* Accent: #5BB8F5 accent blue */
+  --accent: 205 88% 65%;
+  --accent-foreground: 0 0% 5%;
 
   /* Destructive */
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
 
   /* Charts */
-  --chart-1: 24 100% 50%;
-  --chart-2: 142 71% 45%;
-  --chart-3: 197 71% 52%;
+  --chart-1: 210 65% 52%;
+  --chart-2: 205 88% 65%;
+  --chart-3: 142 71% 45%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
 
   /* Sidebar */
   --sidebar: 0 0% 5%;
   --sidebar-foreground: 0 0% 90%;
-  --sidebar-border: 0 0% 15%;
-  --sidebar-primary: 24 100% 50%;
+  --sidebar-border: 213 51% 20%;
+  --sidebar-primary: 210 65% 52%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 0 0% 10%;
-  --sidebar-accent-foreground: 0 0% 85%;
-  --sidebar-ring: 24 100% 50%;
+  --sidebar-accent: 213 40% 10%;
+  --sidebar-accent-foreground: 205 88% 65%;
+  --sidebar-ring: 210 65% 52%;
 
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
   --radius: .5rem;
-  --shadow-2xs: 0px 2px 0px 0px rgba(0,0,0,0.4);
-  --shadow-xs: 0px 2px 4px 0px rgba(0,0,0,0.4);
-  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.4), 0px 1px 2px -1px rgba(0,0,0,0.4);
-  --shadow: 0px 2px 4px 0px rgba(0,0,0,0.4), 0px 1px 2px -1px rgba(0,0,0,0.4);
-  --shadow-md: 0px 2px 4px 0px rgba(0,0,0,0.4), 0px 2px 4px -1px rgba(0,0,0,0.4);
-  --shadow-lg: 0px 2px 4px 0px rgba(0,0,0,0.4), 0px 4px 6px -1px rgba(0,0,0,0.4);
-  --shadow-xl: 0px 2px 4px 0px rgba(0,0,0,0.4), 0px 8px 10px -1px rgba(0,0,0,0.4);
-  --shadow-2xl: 0px 2px 4px 0px rgba(0,0,0,0.4);
+  --shadow-2xs: 0px 2px 0px 0px rgba(0,0,0,0.5);
+  --shadow-xs: 0px 2px 4px 0px rgba(0,0,0,0.5);
+  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.5), 0px 1px 2px -1px rgba(0,0,0,0.5);
+  --shadow: 0px 2px 4px 0px rgba(0,0,0,0.5), 0px 1px 2px -1px rgba(0,0,0,0.5);
+  --shadow-md: 0px 2px 4px 0px rgba(0,0,0,0.5), 0px 2px 4px -1px rgba(0,0,0,0.5);
+  --shadow-lg: 0px 2px 4px 0px rgba(58,143,212,0.15), 0px 4px 6px -1px rgba(58,143,212,0.1);
+  --shadow-xl: 0px 2px 4px 0px rgba(58,143,212,0.2), 0px 8px 10px -1px rgba(58,143,212,0.15);
+  --shadow-2xl: 0px 2px 4px 0px rgba(58,143,212,0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
@@ -182,6 +183,19 @@
     transition: all 0.2s ease;
   }
 
+  /* Blue glow utilities */
+  .glow-blue {
+    box-shadow: 0 0 12px rgba(91, 184, 245, 0.4), 0 0 24px rgba(58, 143, 212, 0.2);
+  }
+
+  .glow-blue-text {
+    text-shadow: 0 0 8px rgba(91, 184, 245, 0.6);
+  }
+
+  .glow-blue-border {
+    box-shadow: 0 0 0 1px rgba(58, 143, 212, 0.5), 0 0 12px rgba(58, 143, 212, 0.2);
+  }
+
   .animate-fadeInUp {
     animation: fadeInUp 0.4s ease forwards;
   }
@@ -205,7 +219,7 @@
   }
 
   @keyframes pulseGlow {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
+    0%, 100% { opacity: 0.5; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.05); }
   }
 
