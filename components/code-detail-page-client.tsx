@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Lock } from 'lucide-react';
-import { codes } from '@/lib/data';
+import type { Code } from '@/lib/data';
+import { fetchBotById } from '@/lib/bots';
 import { FileDirectory } from '@/components/file-directory';
 import { Navbar } from '@/components/navbar';
 import { AccessCodeModal } from '@/components/access-code-modal';
@@ -14,8 +15,29 @@ interface CodeDetailPageClientProps {
 }
 
 export function CodeDetailPageClient({ codeId }: CodeDetailPageClientProps) {
-  const code = codes.find((c) => c.id === codeId);
+  const [code, setCode] = useState<Code | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showAccessModal, setShowAccessModal] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    fetchBotById(codeId)
+      .then((c) => { if (active) setCode(c); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [codeId]);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="flex h-screen items-center justify-center">
+          <p className="text-muted-foreground">Loading…</p>
+        </div>
+      </>
+    );
+  }
 
   if (!code) {
     return (
@@ -24,7 +46,7 @@ export function CodeDetailPageClient({ codeId }: CodeDetailPageClientProps) {
         <div className="flex h-screen items-center justify-center">
           <div className="text-center">
             <h1 className="mb-4 text-4xl font-bold text-foreground">Code Not Found</h1>
-            <p className="mb-8 text-muted-foreground">The code snippet you're looking for doesn't exist.</p>
+            <p className="mb-8 text-muted-foreground">The code snippet you're looking for doesn't exist or is hidden.</p>
             <Link
               href="/codes"
               className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground transition-smooth hover:shadow-lg hover:shadow-primary/30"
@@ -114,10 +136,12 @@ export function CodeDetailPageClient({ codeId }: CodeDetailPageClientProps) {
               </div>
             </div>
 
-            <div className="mb-8 rounded-lg border border-border bg-card p-6">
-              <h2 className="mb-4 text-xl font-bold text-foreground">About This Code</h2>
-              <p className="leading-relaxed text-muted-foreground">{code.fullDescription}</p>
-            </div>
+            {code.fullDescription && (
+              <div className="mb-8 rounded-lg border border-border bg-card p-6">
+                <h2 className="mb-4 text-xl font-bold text-foreground">About This Code</h2>
+                <p className="leading-relaxed text-muted-foreground">{code.fullDescription}</p>
+              </div>
+            )}
 
             {code.files && code.files.length > 0 && (
               <div className="mb-8">

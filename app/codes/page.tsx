@@ -1,32 +1,35 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Navbar } from '@/components/navbar';
 import { CodeCard } from '@/components/code-card';
-import { codes, categories } from '@/lib/data';
+import { categories, type Code } from '@/lib/data';
+import { fetchVisibleBots } from '@/lib/bots';
 import { Search, X, ChevronDown } from 'lucide-react';
 
 export default function CodesPage() {
+  const [codes, setCodes] = useState<Code[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
+  useEffect(() => {
+    fetchVisibleBots()
+      .then(setCodes)
+      .finally(() => setLoading(false));
+  }, []);
+
   const toggleCategory = (categoryId: string) => {
     const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(categoryId)) {
-      newExpanded.delete(categoryId);
-    } else {
-      newExpanded.add(categoryId);
-    }
+    if (newExpanded.has(categoryId)) newExpanded.delete(categoryId);
+    else newExpanded.add(categoryId);
     setExpandedCategories(newExpanded);
   };
 
   const filteredCodes = useMemo(() => {
-    // TEMPORARILY SHOW ONLY MUSIC BOT (ID: 1)
-    const musicBotOnly = codes.filter((code) => code.id === 1);
-    
-    return musicBotOnly.filter((code) => {
+    return codes.filter((code) => {
       const matchesSearch =
         code.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         code.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -39,35 +42,27 @@ export default function CodesPage() {
 
       return matchesSearch && matchesSubcategory && matchesDifficulty;
     });
-  }, [searchQuery, selectedSubcategory, selectedDifficulty]);
+  }, [codes, searchQuery, selectedSubcategory, selectedDifficulty]);
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Header */}
       <section className="border-b border-border px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          <h1 className="mb-2 text-4xl font-bold text-foreground sm:text-5xl">
-            Code Snippets
-          </h1>
+          <h1 className="mb-2 text-4xl font-bold text-foreground sm:text-5xl">Code Snippets</h1>
           <p className="text-lg text-muted-foreground">
             Browse our collection of {codes.length} carefully curated code tutorials and examples
           </p>
         </div>
       </section>
 
-      {/* Main Content */}
       <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 md:grid-cols-4">
-            {/* Sidebar */}
             <div className="space-y-6 md:col-span-1">
-              {/* Search */}
               <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">
-                  Search
-                </label>
+                <label className="mb-2 block text-sm font-semibold text-foreground">Search</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <input
@@ -89,7 +84,6 @@ export default function CodesPage() {
                 </div>
               </div>
 
-              {/* Categories with Subcategories */}
               <div>
                 <h3 className="mb-3 font-semibold text-foreground">Categories</h3>
                 <div className="space-y-2">
@@ -109,7 +103,6 @@ export default function CodesPage() {
 
                   {categories.map((category) => (
                     <div key={category.id}>
-                      {/* Category Header */}
                       <button
                         onClick={() => toggleCategory(category.id)}
                         className="w-full text-left rounded-lg px-3 py-2 text-sm transition-colors hover:bg-card flex items-center justify-between"
@@ -125,25 +118,27 @@ export default function CodesPage() {
                         />
                       </button>
 
-                      {/* Subcategories */}
                       {expandedCategories.has(category.id) && (
                         <div className="ml-2 mt-1 space-y-1 border-l border-border pl-2">
-                          {category.subcategories.map((sub) => (
-                            <button
-                              key={sub.id}
-                              onClick={() => setSelectedSubcategory(sub.id)}
-                              className={`w-full text-left rounded px-3 py-1.5 text-xs transition-colors ${
-                                selectedSubcategory === sub.id
-                                  ? 'bg-primary/20 text-primary'
-                                  : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
-                              }`}
-                            >
-                              <span className="flex items-center justify-between">
-                                {sub.label}
-                                <span className="text-xs opacity-70">({sub.count})</span>
-                              </span>
-                            </button>
-                          ))}
+                          {category.subcategories.map((sub) => {
+                            const count = codes.filter((c) => c.subcategory === sub.id).length;
+                            return (
+                              <button
+                                key={sub.id}
+                                onClick={() => setSelectedSubcategory(sub.id)}
+                                className={`w-full text-left rounded px-3 py-1.5 text-xs transition-colors ${
+                                  selectedSubcategory === sub.id
+                                    ? 'bg-primary/20 text-primary'
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+                                }`}
+                              >
+                                <span className="flex items-center justify-between">
+                                  {sub.label}
+                                  <span className="text-xs opacity-70">({count})</span>
+                                </span>
+                              </button>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
@@ -151,7 +146,6 @@ export default function CodesPage() {
                 </div>
               </div>
 
-              {/* Difficulty */}
               <div>
                 <h3 className="mb-3 font-semibold text-foreground">Difficulty</h3>
                 <div className="space-y-2">
@@ -182,9 +176,10 @@ export default function CodesPage() {
               </div>
             </div>
 
-            {/* Code Grid */}
             <div className="md:col-span-3">
-              {filteredCodes.length > 0 ? (
+              {loading ? (
+                <p className="text-muted-foreground">Loading…</p>
+              ) : filteredCodes.length > 0 ? (
                 <>
                   <p className="mb-6 text-sm text-muted-foreground">
                     Showing {filteredCodes.length} of {codes.length} snippets
@@ -197,9 +192,7 @@ export default function CodesPage() {
                 </>
               ) : (
                 <div className="rounded-lg border border-border bg-card p-12 text-center">
-                  <p className="text-muted-foreground">
-                    No code snippets found matching your criteria.
-                  </p>
+                  <p className="text-muted-foreground">No code snippets found matching your criteria.</p>
                   <button
                     onClick={() => {
                       setSearchQuery('');
