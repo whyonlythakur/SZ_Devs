@@ -3,15 +3,24 @@
 import Link from 'next/link';
 import { Navbar } from '@/components/navbar';
 import { CodeCard } from '@/components/code-card';
-import { codes, stats as defaultStats } from '@/lib/data';
+import { stats as defaultStats, type Code } from '@/lib/data';
+import { fetchVisibleBots } from '@/lib/bots';
 import { ArrowRight, Github, Youtube, Twitter } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const YOUTUBE_URL = 'https://youtube.com/@whyonlythakur';
 
 export default function Home() {
-  const featuredCodes = codes.filter((code) => code.id === 1);
+  const [codes, setCodes] = useState<Code[]>([]);
   const [stats, setStats] = useState(defaultStats);
+
+  useEffect(() => {
+    fetchVisibleBots().then(setCodes);
+  }, []);
+
+  const featuredCodes = codes.filter((c) => c.featured).length > 0
+    ? codes.filter((c) => c.featured)
+    : codes.slice(0, 6);
 
   useEffect(() => {
     async function fetchYouTubeStats() {
@@ -22,32 +31,31 @@ export default function Home() {
           `https://www.googleapis.com/youtube/v3/channels?forHandle=${CHANNEL_HANDLE}&part=statistics&key=${YOUTUBE_API_KEY}`
         );
         const channelData = await response.json();
-        
+
         if (channelData.items && channelData.items.length > 0) {
-          const stats = channelData.items[0].statistics;
-          const visibleCodes = codes.filter((code) => code.id === 1);
-          const codeSnippets = visibleCodes.length;
-          
+          const ytStats = channelData.items[0].statistics;
+          const codeSnippets = codes.length;
+
           const formatNumber = (num: number) => {
             if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
             return num.toString();
           };
-          
+
           setStats([
             { value: codeSnippets.toString(), label: 'Code Snippets', description: 'Ready to use' },
-            { value: formatNumber(parseInt(stats.viewCount || '0')), label: 'Total Views', description: 'On our channel' },
-            { value: formatNumber(parseInt(stats.subscriberCount || '0')), label: 'Community', description: 'Subscribers' },
-            { value: stats.videoCount || '0', label: 'Tutorials', description: 'On YouTube' },
+            { value: formatNumber(parseInt(ytStats.viewCount || '0')), label: 'Total Views', description: 'On our channel' },
+            { value: formatNumber(parseInt(ytStats.subscriberCount || '0')), label: 'Community', description: 'Subscribers' },
+            { value: ytStats.videoCount || '0', label: 'Tutorials', description: 'On YouTube' },
           ]);
         }
       } catch (error) {
         console.error('Failed to fetch YouTube stats:', error);
       }
     }
-    
+
     fetchYouTubeStats();
-  }, []);
+  }, [codes.length]);
 
   return (
     <div className="min-h-screen bg-background">
