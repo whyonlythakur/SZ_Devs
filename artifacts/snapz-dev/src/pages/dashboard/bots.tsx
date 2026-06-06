@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { dashApi } from '@/lib/dashboard-api';
+import { categories } from '@/lib/data';
 import { Eye, EyeOff, Pencil, Trash2, Plus, X, Save } from 'lucide-react';
 
 type Role = 'founder' | 'ceo' | 'coo' | 'cto';
@@ -10,8 +11,11 @@ const perms = (r: Role) => ({
   visibility: r === 'founder' || r === 'ceo',
 });
 
+const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];
+const LANGUAGES = ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'Go', 'Rust', 'PHP', 'Ruby', 'Other'];
+
 const empty = {
-  title: '', description: '', category: 'discord-bot', subcategory: '',
+  title: '', description: '', category: categories[0].id, subcategory: categories[0].subcategories[0].id,
   difficulty: 'Beginner', language: 'JavaScript', banner_image: '',
   full_description: '', technologies: '', features: '',
   access_code: '', filelink: '', is_visible: true, featured: false,
@@ -125,7 +129,17 @@ function BotEditor({ initial, isEdit, onClose, onSaved }: any) {
   const addFile = () => setForm((f: any) => ({ ...f, files: [...f.files, { name: '', language: 'javascript', code: '' }] }));
   const rmFile = (i: number) => setForm((f: any) => ({ ...f, files: f.files.filter((_: any, j: number) => j !== i) }));
 
+  const selectedCat = categories.find((c) => c.id === form.category) ?? categories[0];
+  const subcats = selectedCat.subcategories;
+
+  const handleCategoryChange = (catId: string) => {
+    const cat = categories.find((c) => c.id === catId) ?? categories[0];
+    set('category', catId);
+    set('subcategory', cat.subcategories[0]?.id ?? '');
+  };
+
   const inputClass = "w-full bg-[#0A0A0A] border border-[#1E3A5F] rounded-md px-3 py-2 text-white text-sm focus:outline-none focus:border-[#3A8FD4] transition-colors";
+  const selectClass = `${inputClass} cursor-pointer`;
 
   const submit = async () => {
     setSaving(true); setErr(null);
@@ -156,45 +170,110 @@ function BotEditor({ initial, isEdit, onClose, onSaved }: any) {
           <h2 className="text-xl font-bold text-white">{isEdit ? 'Edit bot' : 'New bot'}</h2>
           <button onClick={onClose} className="p-1 hover:bg-[#1E3A5F]/40 rounded text-gray-400 hover:text-white"><X className="h-5 w-5" /></button>
         </div>
+
         <div className="p-5 space-y-4 text-sm">
-          <Field label="Title"><input value={form.title} onChange={(e) => set('title', e.target.value)} className={inputClass} /></Field>
-          <Field label="Short description"><input value={form.description} onChange={(e) => set('description', e.target.value)} className={inputClass} /></Field>
-          <Field label="Full description"><textarea value={form.full_description || ''} onChange={(e) => set('full_description', e.target.value)} className={`${inputClass} min-h-[80px]`} /></Field>
+          <Field label="Title">
+            <input value={form.title} onChange={(e) => set('title', e.target.value)} className={inputClass} placeholder="e.g. Discord Music Bot" />
+          </Field>
+
+          <Field label="Short description">
+            <input value={form.description} onChange={(e) => set('description', e.target.value)} className={inputClass} placeholder="One-line summary" />
+          </Field>
+
+          <Field label="Full description">
+            <textarea value={form.full_description || ''} onChange={(e) => set('full_description', e.target.value)} className={`${inputClass} min-h-[80px]`} placeholder="Detailed description shown on the code detail page" />
+          </Field>
+
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Category"><input value={form.category} onChange={(e) => set('category', e.target.value)} className={inputClass} /></Field>
-            <Field label="Subcategory"><input value={form.subcategory || ''} onChange={(e) => set('subcategory', e.target.value)} className={inputClass} /></Field>
-            <Field label="Difficulty"><input value={form.difficulty || ''} onChange={(e) => set('difficulty', e.target.value)} className={inputClass} /></Field>
-            <Field label="Language"><input value={form.language || ''} onChange={(e) => set('language', e.target.value)} className={inputClass} /></Field>
+            <Field label="Category">
+              <select value={form.category} onChange={(e) => handleCategoryChange(e.target.value)} className={selectClass}>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Subcategory">
+              <select value={form.subcategory} onChange={(e) => set('subcategory', e.target.value)} className={selectClass}>
+                {subcats.map((s) => (
+                  <option key={s.id} value={s.id}>{s.label}</option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Difficulty">
+              <select value={form.difficulty} onChange={(e) => set('difficulty', e.target.value)} className={selectClass}>
+                {DIFFICULTIES.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Language">
+              <select value={form.language} onChange={(e) => set('language', e.target.value)} className={selectClass}>
+                {LANGUAGES.map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </select>
+            </Field>
           </div>
-          <Field label="Banner image URL"><input value={form.banner_image || ''} onChange={(e) => set('banner_image', e.target.value)} className={inputClass} /></Field>
-          <Field label="Technologies (comma-separated)"><input value={form.technologies} onChange={(e) => set('technologies', e.target.value)} className={inputClass} /></Field>
-          <Field label="Features (comma-separated)"><input value={form.features} onChange={(e) => set('features', e.target.value)} className={inputClass} /></Field>
+
+          <Field label="Banner image URL">
+            <input value={form.banner_image || ''} onChange={(e) => set('banner_image', e.target.value)} className={inputClass} placeholder="https://..." />
+          </Field>
+
+          <Field label="Technologies (comma-separated)">
+            <input value={form.technologies} onChange={(e) => set('technologies', e.target.value)} className={inputClass} placeholder="e.g. Discord.js, Node.js, MongoDB" />
+          </Field>
+
+          <Field label="Features (comma-separated)">
+            <input value={form.features} onChange={(e) => set('features', e.target.value)} className={inputClass} placeholder="e.g. Music playback, Queue management" />
+          </Field>
+
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Access code"><input value={form.access_code || ''} onChange={(e) => set('access_code', e.target.value)} className={inputClass} /></Field>
-            <Field label="File link"><input value={form.filelink || ''} onChange={(e) => set('filelink', e.target.value)} className={inputClass} /></Field>
+            <Field label="Access code">
+              <input value={form.access_code || ''} onChange={(e) => set('access_code', e.target.value)} className={inputClass} placeholder="e.g. DISCORD-MUSIC-001" />
+            </Field>
+            <Field label="File link">
+              <input value={form.filelink || ''} onChange={(e) => set('filelink', e.target.value)} className={inputClass} placeholder="Download URL" />
+            </Field>
           </div>
+
           <div className="flex gap-6 text-gray-300">
-            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={!!form.is_visible} onChange={(e) => set('is_visible', e.target.checked)} className="accent-[#3A8FD4]" /> Visible to public</label>
-            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={!!form.featured} onChange={(e) => set('featured', e.target.checked)} className="accent-[#3A8FD4]" /> Featured</label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={!!form.is_visible} onChange={(e) => set('is_visible', e.target.checked)} className="accent-[#3A8FD4]" />
+              Visible to public
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={!!form.featured} onChange={(e) => set('featured', e.target.checked)} className="accent-[#3A8FD4]" />
+              Featured on homepage
+            </label>
           </div>
+
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="font-medium text-gray-300">Code files</span>
-              <button onClick={addFile} className="text-xs flex items-center gap-1 text-[#5BB8F5] hover:underline"><Plus className="h-3 w-3" /> Add file</button>
+              <button onClick={addFile} className="text-xs flex items-center gap-1 text-[#5BB8F5] hover:underline">
+                <Plus className="h-3 w-3" /> Add file
+              </button>
             </div>
             {form.files.map((f: any, i: number) => (
               <div key={i} className="border border-[#1E3A5F]/50 rounded p-3 mb-3 space-y-2">
                 <div className="grid grid-cols-[1fr,140px,auto] gap-2">
                   <input placeholder="filename.js" value={f.name} onChange={(e) => setFile(i, 'name', e.target.value)} className={inputClass} />
                   <input placeholder="language" value={f.language} onChange={(e) => setFile(i, 'language', e.target.value)} className={inputClass} />
-                  <button onClick={() => rmFile(i)} className="text-gray-500 hover:text-red-400 p-2 rounded hover:bg-red-500/10 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => rmFile(i)} className="text-gray-500 hover:text-red-400 p-2 rounded hover:bg-red-500/10 transition-colors">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
-                <textarea placeholder="code" value={f.code} onChange={(e) => setFile(i, 'code', e.target.value)} className={`${inputClass} min-h-[120px] font-mono text-xs`} />
+                <textarea placeholder="Paste code here…" value={f.code} onChange={(e) => setFile(i, 'code', e.target.value)} className={`${inputClass} min-h-[120px] font-mono text-xs`} />
               </div>
             ))}
           </div>
+
           {err && <div className="text-red-400 text-sm">{err}</div>}
         </div>
+
         <div className="p-5 border-t border-[#1E3A5F]/40 flex justify-end gap-2 sticky bottom-0 bg-[#0d1117]">
           <button onClick={onClose} className="px-4 py-2 rounded border border-[#1E3A5F] text-gray-400 hover:bg-[#1E3A5F]/20 transition-colors">Cancel</button>
           <button disabled={saving} onClick={submit}

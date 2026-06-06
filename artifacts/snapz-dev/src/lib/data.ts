@@ -92,6 +92,21 @@ export const categories: CategoryGroup[] = [
       { id: 'mobile-components', label: 'Components', count: 0 },
     ],
   },
+  {
+    id: 'cybersecurity',
+    label: 'Cybersecurity',
+    icon: '🔒',
+    subcategories: [
+      { id: 'cyber-pentest', label: 'Penetration Testing', count: 0 },
+      { id: 'cyber-web-security', label: 'Web Security', count: 0 },
+      { id: 'cyber-network', label: 'Network Security', count: 0 },
+      { id: 'cyber-malware', label: 'Malware Analysis', count: 0 },
+      { id: 'cyber-ctf', label: 'CTF Challenges', count: 0 },
+      { id: 'cyber-crypto', label: 'Cryptography', count: 0 },
+      { id: 'cyber-forensics', label: 'Digital Forensics', count: 0 },
+      { id: 'cyber-osint', label: 'OSINT', count: 0 },
+    ],
+  },
 ];
 
 export const stats = [

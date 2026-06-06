@@ -6,7 +6,7 @@ import { fetchVisibleBots } from '@/lib/bots';
 import { ArrowRight, Github, Youtube, Twitter } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const YOUTUBE_URL = 'https://youtube.com/@whyonlythakur';
+const YOUTUBE_URL = 'https://youtube.com/@SnapZ_HQ';
 
 export default function Home() {
   const [codes, setCodes] = useState<Code[]>([]);
@@ -24,7 +24,7 @@ export default function Home() {
     async function fetchYouTubeStats() {
       try {
         const YOUTUBE_API_KEY = 'AIzaSyCJXtZQT-6OI2vjNTLZhlNR5qiZcUHZq7A';
-        const CHANNEL_HANDLE = '@whyonlythakur';
+        const CHANNEL_HANDLE = '@SnapZ_HQ';
         const response = await fetch(
           `https://www.googleapis.com/youtube/v3/channels?forHandle=${CHANNEL_HANDLE}&part=statistics&key=${YOUTUBE_API_KEY}`
         );
