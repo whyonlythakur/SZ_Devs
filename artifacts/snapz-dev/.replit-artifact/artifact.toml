@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Snap-Z Development"
+version = "1.0.0"
+id = "artifacts/snapz-dev"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18732
+
+[services.development]
+run = "pnpm --filter @workspace/snapz-dev run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/snapz-dev", "run", "build" ]
+publicDir = "artifacts/snapz-dev/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18732"
+BASE_PATH = "/"
