@@ -83,21 +83,6 @@ export const categories: CategoryGroup[] = [
     ],
   },
   {
-  id: 'cybersecurity',
-  label: 'Cybersecurity',
-  icon: '🔐',
-  subcategories: [
-    { id: 'cyber-pentesting', label: 'Penetration Testing', count: 2 },
-    { id: 'cyber-network-security', label: 'Network Security', count: 2 },
-    { id: 'cyber-web-security', label: 'Web Security', count: 2 },
-    { id: 'cyber-malware-analysis', label: 'Malware Analysis', count: 1 },
-    { id: 'cyber-digital-forensics', label: 'Digital Forensics', count: 1 },
-    { id: 'cyber-threat-intelligence', label: 'Threat Intelligence', count: 1 },
-    { id: 'cyber-incident-response', label: 'Incident Response', count: 1 },
-    { id: 'cyber-osint', label: 'OSINT', count: 1 },
-  ],
-},
-  {
     id: 'mobile-apps',
     label: 'Mobile Apps',
     icon: '📱',
