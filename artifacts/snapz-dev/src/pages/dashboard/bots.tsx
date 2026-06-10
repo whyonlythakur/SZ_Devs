@@ -7,10 +7,10 @@ import type { StaffRole } from '@/lib/dashboard-api';
 
 type Role = StaffRole;
 const perms = (r: Role) => ({
-  create: r !== 'coo',
-  edit: r === 'founder' || r === 'ceo',
-  del: r !== 'cto',
-  visibility: r === 'founder' || r === 'ceo',
+  create:     true,
+  edit:       r === 'founder' || r === 'ceo',
+  del:        r !== 'cto',
+  visibility: r === 'founder' || r === 'ceo' || r === 'coo',
 });
 
 const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];

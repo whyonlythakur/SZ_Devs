@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { dashApi, clearToken, getToken, type StaffUser, type StaffRole } from '@/lib/dashboard-api';
-import { LayoutDashboard, Bot, Users, ScrollText, LogOut, Snowflake } from 'lucide-react';
+import { LayoutDashboard, Bot, Users, ScrollText, LogOut, Snowflake, Monitor } from 'lucide-react';
 
 const NAV: { href: string; label: string; icon: any; roles: StaffRole[] }[] = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, roles: ['founder','ceo','coo','cto'] },
-  { href: '/dashboard/bots', label: 'Bots', icon: Bot, roles: ['founder','ceo','coo','cto'] },
-  { href: '/dashboard/staff', label: 'Staff', icon: Users, roles: ['founder','ceo'] },
-  { href: '/dashboard/audit', label: 'Audit Log', icon: ScrollText, roles: ['founder','ceo'] },
+  { href: '/dashboard',         label: 'Overview',    icon: LayoutDashboard, roles: ['founder','ceo','coo','cto'] },
+  { href: '/dashboard/bots',    label: 'Bots',         icon: Bot,             roles: ['founder','ceo','coo','cto'] },
+  { href: '/dashboard/preview', label: 'Site Preview', icon: Monitor,         roles: ['founder','ceo','coo','cto'] },
+  { href: '/dashboard/staff',   label: 'Staff',        icon: Users,           roles: ['founder','ceo'] },
+  { href: '/dashboard/audit',   label: 'Audit Log',    icon: ScrollText,      roles: ['founder','ceo','coo'] },
 ];
 
 interface DashboardLayoutProps {

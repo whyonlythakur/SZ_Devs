@@ -14,6 +14,7 @@ import DashboardOverview from "@/pages/dashboard/index";
 import BotsPage from "@/pages/dashboard/bots";
 import StaffPage from "@/pages/dashboard/staff";
 import AuditPage from "@/pages/dashboard/audit";
+import PreviewPage from "@/pages/dashboard/preview";
 import DashboardLayout from "@/pages/dashboard/layout";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,11 @@ function Router() {
       <Route path="/dashboard/audit">
         <DashboardLayout>
           <AuditPage />
+        </DashboardLayout>
+      </Route>
+      <Route path="/dashboard/preview">
+        <DashboardLayout>
+          <PreviewPage />
         </DashboardLayout>
       </Route>
       <Route component={NotFound} />
