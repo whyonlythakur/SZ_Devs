@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { apiFetch } from './api-client';
 import type { Code } from './data';
 
 function mapBot(row: any): Code {
@@ -10,8 +10,8 @@ function mapBot(row: any): Code {
     subcategory: row.subcategory ?? '',
     difficulty: row.difficulty ?? '',
     language: row.language ?? '',
-    views: row.views ?? 0,
-    likes: row.likes ?? 0,
+    views: 0,
+    likes: 0,
     featured: row.featured ?? false,
     bannerImage: row.banner_image ?? undefined,
     fullDescription: row.full_description ?? undefined,
@@ -22,40 +22,35 @@ function mapBot(row: any): Code {
     files: Array.isArray(row.bot_files)
       ? [...row.bot_files]
           .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-          .map((f) => ({ name: f.name, language: f.language, code: f.code }))
+          .map((f: any) => ({ name: f.name, language: f.language, code: f.code }))
       : [],
   };
 }
 
 export async function fetchVisibleBots(): Promise<Code[]> {
-  const { data, error } = await supabase
-    .from('bots')
-    .select('*')
-    .eq('is_visible', true)
-    .order('id', { ascending: false });
-  if (error) {
-    console.error('fetchVisibleBots', error);
+  try {
+    const data = await apiFetch('/api/bots');
+    return (data.bots ?? []).map(mapBot);
+  } catch (e) {
+    console.error('fetchVisibleBots', e);
     return [];
   }
-  return (data ?? []).map(mapBot);
 }
 
 export async function fetchBotById(id: number): Promise<Code | null> {
-  const { data, error } = await supabase
-    .from('bots')
-    .select('*, bot_files(*)')
-    .eq('id', id)
-    .eq('is_visible', true)
-    .maybeSingle();
-  if (error || !data) return null;
-  return mapBot(data);
+  try {
+    const data = await apiFetch(`/api/bots/${id}`);
+    return data.bot ? mapBot(data.bot) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchAllVisibleBotIds(): Promise<number[]> {
-  const { data, error } = await supabase
-    .from('bots')
-    .select('id')
-    .eq('is_visible', true);
-  if (error || !data) return [];
-  return data.map((r: any) => r.id);
+  try {
+    const data = await apiFetch('/api/bots');
+    return (data.bots ?? []).map((b: any) => b.id);
+  } catch {
+    return [];
+  }
 }

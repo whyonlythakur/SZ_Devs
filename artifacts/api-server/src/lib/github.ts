@@ -12,8 +12,29 @@ if (!process.env.GITHUB_REPO) {
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
-const OWNER = process.env.GITHUB_OWNER;
-const REPO  = process.env.GITHUB_REPO;
+/** Extract "owner" or "owner/repo" from a full GitHub URL if needed */
+function extractPathSegment(raw: string, segmentFromEnd: number): string {
+  const trimmed = raw.trim().replace(/\/$/, "");
+  // If it looks like a URL, grab path segments
+  try {
+    const url = new URL(trimmed);
+    const parts = url.pathname.replace(/^\//, "").split("/");
+    return parts[parts.length - segmentFromEnd] ?? trimmed;
+  } catch {
+    // Not a URL — use as-is
+    return trimmed;
+  }
+}
+
+const _rawOwner = process.env.GITHUB_OWNER!;
+const _rawRepo  = process.env.GITHUB_REPO!;
+
+// GITHUB_OWNER may be "https://github.com/acme" → extract "acme"
+const OWNER = extractPathSegment(_rawOwner, 1);
+// GITHUB_REPO may be "https://github.com/acme/my-repo" → extract "my-repo"
+const REPO  = _rawRepo.includes("/")
+  ? extractPathSegment(_rawRepo, 1)   // last segment of a URL or "owner/repo"
+  : _rawRepo.trim();
 
 export interface GitHubFileResult {
   content: any;
@@ -22,7 +43,6 @@ export interface GitHubFileResult {
 
 /**
  * Read a JSON file from the repo and return its parsed content + current SHA.
- * The SHA is required by the GitHub API when you want to update the file.
  */
 export async function readJsonFile(path: string): Promise<GitHubFileResult> {
   const { data } = await octokit.repos.getContent({ owner: OWNER, repo: REPO, path });
@@ -36,23 +56,21 @@ export async function readJsonFile(path: string): Promise<GitHubFileResult> {
 }
 
 /**
- * Write a JSON value back to the repo as a commit.
- * `sha` must be the SHA of the current file (obtained from readJsonFile).
+ * Write a JSON value to the repo as a commit.
+ * Pass sha="" to create a new file, or the current SHA to update.
+ * Returns the new file SHA.
  */
 export async function writeJsonFile(
   path: string,
   data: unknown,
   sha: string,
   message = `chore: update ${path} via dashboard`,
-): Promise<void> {
+): Promise<string> {
   const encoded = Buffer.from(JSON.stringify(data, null, 2)).toString("base64");
 
-  await octokit.repos.createOrUpdateFileContents({
-    owner: OWNER,
-    repo: REPO,
-    path,
-    message,
-    content: encoded,
-    sha,
-  });
+  const params: any = { owner: OWNER, repo: REPO, path, message, content: encoded };
+  if (sha) params.sha = sha;
+
+  const { data: result } = await octokit.repos.createOrUpdateFileContents(params);
+  return result.content?.sha ?? "";
 }

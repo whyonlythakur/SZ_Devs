@@ -3,12 +3,12 @@ import { dashApi } from '@/lib/dashboard-api';
 import { categories } from '@/lib/data';
 import { Eye, EyeOff, Pencil, Trash2, Plus, X, Save } from 'lucide-react';
 
-type Role = 'founder' | 'ceo' | 'coo' | 'cto';
+type Role = 'founder' | 'ceo' | 'coo' | 'cto' | 'admin';
 const perms = (r: Role) => ({
-  create: r !== 'coo',
-  edit: r === 'founder' || r === 'ceo',
-  del: r !== 'cto',
-  visibility: r === 'founder' || r === 'ceo',
+  create: r === 'admin' || r !== 'coo',
+  edit: r === 'admin' || r === 'founder' || r === 'ceo',
+  del: r === 'admin' || r !== 'cto',
+  visibility: r === 'admin' || r === 'founder' || r === 'ceo',
 });
 
 const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];
