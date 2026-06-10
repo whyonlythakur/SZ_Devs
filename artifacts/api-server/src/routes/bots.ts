@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { readDb, writeDb, type Bot } from "../lib/db";
-import { requireApiKey } from "../middlewares/requireApiKey";
+import { requireSession } from "../middlewares/requireSession";
 
 const router = Router();
 
@@ -27,9 +27,9 @@ router.get("/bots/:id", async (req, res) => {
   }
 });
 
-/* ── Admin: all bots (API key required) ───────────────────── */
+/* ── Admin: all bots (session required) ───────────────────── */
 
-router.get("/admin/bots", requireApiKey, async (_req, res) => {
+router.get("/admin/bots", requireSession, async (_req, res) => {
   try {
     const { data } = await readDb();
     res.json({ ok: true, bots: data.bots });
@@ -38,7 +38,7 @@ router.get("/admin/bots", requireApiKey, async (_req, res) => {
   }
 });
 
-router.post("/admin/bots", requireApiKey, async (req, res) => {
+router.post("/admin/bots", requireSession, async (req, res) => {
   try {
     const { data, sha } = await readDb();
     const newBot: Bot = {
@@ -70,7 +70,7 @@ router.post("/admin/bots", requireApiKey, async (req, res) => {
   }
 });
 
-router.patch("/admin/bots/:id", requireApiKey, async (req, res) => {
+router.patch("/admin/bots/:id", requireSession, async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { data, sha } = await readDb();
@@ -91,7 +91,7 @@ router.patch("/admin/bots/:id", requireApiKey, async (req, res) => {
   }
 });
 
-router.delete("/admin/bots/:id", requireApiKey, async (req, res) => {
+router.delete("/admin/bots/:id", requireSession, async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { data, sha } = await readDb();
@@ -105,7 +105,7 @@ router.delete("/admin/bots/:id", requireApiKey, async (req, res) => {
   }
 });
 
-router.patch("/admin/bots/:id/visibility", requireApiKey, async (req, res) => {
+router.patch("/admin/bots/:id/visibility", requireSession, async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { data, sha } = await readDb();
@@ -120,7 +120,7 @@ router.patch("/admin/bots/:id/visibility", requireApiKey, async (req, res) => {
   }
 });
 
-router.get("/admin/audit", requireApiKey, async (_req, res) => {
+router.get("/admin/audit", requireSession, async (_req, res) => {
   try {
     const { data } = await readDb();
     res.json({ ok: true, log: data.audit.slice(0, 100) });

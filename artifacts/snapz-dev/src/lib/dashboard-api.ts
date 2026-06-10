@@ -2,10 +2,13 @@ import { apiFetch } from './api-client';
 
 export const SESSION_KEY = 'snapz_staff_session';
 
+export type StaffRole = 'founder' | 'ceo' | 'coo' | 'cto';
+
 export interface StaffUser {
+  discord_id: string;
   username: string;
   avatar: string | null;
-  role: 'admin';
+  role: StaffRole;
   is_frozen: boolean;
 }
 
@@ -29,10 +32,7 @@ const admin = (method: string, path: string, body?: any) =>
   }, true);
 
 export const dashApi = {
-  login: (key: string) =>
-    apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ key }) }),
-
-  me: () => apiFetch('/api/auth/me', {}, true).then((r) => ({ user: r.user })),
+  me: () => apiFetch('/api/auth/me', {}, true).then((r) => ({ user: r.user as StaffUser })),
 
   listBots: () => admin('GET', '/bots'),
   createBot: (data: any) => admin('POST', '/bots', data),
