@@ -37,7 +37,7 @@
       "difficulty": "Intermediate",
       "language": "JavaScript",
       "banner_image": "https://media.discordapp.net/attachments/1512387705529434142/1513084118949298237/Picsart_26-06-07_13-04-24-697.jpg?ex=6a2bb6e5&is=6a2a6565&hm=19ca60712d8a642b15c5533e6f98ef4ad0c88c054683f9bfa4f8b5d67e90a9ea&=&format=webp&width=723&height=406",
-      "full_description": "A feature-rich all-in-one Discord bot designed to give server owners complete control over their community. With over 1,333 commands across 41+ main commands and 25+ subcommands, it covers everything you need in one place.\n\n\nThe bot includes a full Music System with play, queue, loop, filters, and autoplay support. Server security is handled through Anti-Nuke Protection with whitelist, vanity guard, and punishment systems, alongside AutoMod with anti-link, anti-mention, and blacklist word filtering.\n\n\nCommunity engagement is covered with a Giveaway system, Warning & Case System, Birthday & Profile Cards, a Ticket System, and Welcome, Verification & Reaction Roles.\n\n\nWhat sets it apart is the Live Web Dashboard — a full guild control panel letting server admins manage everything from a browser without needing Discord commands.",
+      "full_description": "",
       "technologies": [
         "Discord.js",
         "Node.js",
@@ -65,11 +65,23 @@
       "is_visible": true,
       "featured": true,
       "bot_files": [],
-      "created_at": "2026-06-11T11:43:34.728Z"
+      "created_at": "2026-06-11T11:43:34.728Z",
+      "files": []
     }
   ],
   "nextId": 3,
   "audit": [
+    {
+      "id": 4,
+      "created_at": "2026-06-11T11:52:46.037Z",
+      "action": "update-bot",
+      "actor": "admin",
+      "target_type": "bot",
+      "target_id": 1,
+      "payload": {
+        "title": "POGY | Multipurpose Discord Bot"
+      }
+    },
     {
       "id": 3,
       "created_at": "2026-06-11T11:52:02.341Z",
