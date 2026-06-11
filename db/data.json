@@ -2,7 +2,7 @@
   "bots": [
     {
       "id": 2,
-      "title": "",
+      "title": "Tsukina | Discord Music System",
       "description": "A powerful 24/7 music bot with smart autoplay, Spotify support, advanced queue management, and 65+ combined system commands for the ultimate listening experience.",
       "category": "discord-bot",
       "subcategory": "discord-music",
@@ -23,9 +23,10 @@
       "access_code": "Music#001",
       "filelink": "https://mega.nz/folder/MhtTCYRb#aKYt9nvKW0c_aKirwHCxGg",
       "is_visible": true,
-      "featured": false,
+      "featured": true,
       "bot_files": [],
-      "created_at": "2026-06-11T11:51:18.648Z"
+      "created_at": "2026-06-11T11:51:18.648Z",
+      "files": []
     },
     {
       "id": 1,
@@ -69,6 +70,17 @@
   ],
   "nextId": 3,
   "audit": [
+    {
+      "id": 3,
+      "created_at": "2026-06-11T11:52:02.341Z",
+      "action": "update-bot",
+      "actor": "admin",
+      "target_type": "bot",
+      "target_id": 2,
+      "payload": {
+        "title": "Tsukina | Discord Music System"
+      }
+    },
     {
       "id": 2,
       "created_at": "2026-06-11T11:51:18.648Z",
