@@ -1,6 +1,33 @@
 {
   "bots": [
     {
+      "id": 2,
+      "title": "",
+      "description": "A powerful 24/7 music bot with smart autoplay, Spotify support, advanced queue management, and 65+ combined system commands for the ultimate listening experience.",
+      "category": "discord-bot",
+      "subcategory": "discord-music",
+      "difficulty": "Beginner",
+      "language": "JavaScript",
+      "banner_image": "https://media.discordapp.net/attachments/1512387705529434142/1513084118194458684/Picsart_26-02-25_15-57-04-641.jpg?ex=6a2bb6e5&is=6a2a6565&hm=6a5f20134e309f2971e6d2351cd441c144ecf03f8e3170be50969d3c124704b8&=&format=webp&width=784&height=440",
+      "full_description": "A powerful 24/7 music bot with smart autoplay, Spotify support, advanced queue management, and 65+ combined system commands for the ultimate listening experience.",
+      "technologies": [
+        "Discord.js",
+        "Node.js",
+        "Typscript",
+        "React.js"
+      ],
+      "features": [
+        "Smart Autoplay",
+        "Advanced Queue Managment System"
+      ],
+      "access_code": "Music#001",
+      "filelink": "https://mega.nz/folder/MhtTCYRb#aKYt9nvKW0c_aKirwHCxGg",
+      "is_visible": true,
+      "featured": false,
+      "bot_files": [],
+      "created_at": "2026-06-11T11:51:18.648Z"
+    },
+    {
       "id": 1,
       "title": "POGY | Multipurpose Discord Bot",
       "description": "A powerful all-in-one Discord bot with 1,333+ commands.",
@@ -40,8 +67,19 @@
       "created_at": "2026-06-11T11:43:34.728Z"
     }
   ],
-  "nextId": 2,
+  "nextId": 3,
   "audit": [
+    {
+      "id": 2,
+      "created_at": "2026-06-11T11:51:18.648Z",
+      "action": "create-bot",
+      "actor": "admin",
+      "target_type": "bot",
+      "target_id": 2,
+      "payload": {
+        "title": ""
+      }
+    },
     {
       "id": 1,
       "created_at": "2026-06-11T11:43:34.728Z",
