@@ -34,6 +34,61 @@
           "name": "disconnect.js",
           "language": "javascript",
           "code": "const guildCooldowns = new Map();\nconst DISCONNECT_COOLDOWN_MS = 1200;\n\nmodule.exports = {\n    name: \"disconnect\",\n    aliases: [\"dc\", \"leave\"],\n    description: \"Disconnect bot from voice channel.\",\n    usage: \"disconnect\",\n    async execute({ bot, message, reply }) {\n        const now = Date.now();\n        const key = message.guild.id;\n        const last = guildCooldowns.get(key) || 0;\n        if (now - last < DISCONNECT_COOLDOWN_MS) {\n            return;\n        }\n        guildCooldowns.set(key, now);\n\n        const ok = await bot.music.disconnect(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Not Connected\", description: \"No active voice connection.\" });\n            return;\n        }\n\n        await reply({ title: \"Disconnected\", description: \"Left voice channel.\" });\n    }\n};\n"
+        },
+        {
+          "name": "filter.js",
+          "language": "javascript",
+          "code": "onst { listFilterPresets, getFilterPreset } = require(\"../filter\");\n\nfunction formatFilterList() {\n    return listFilterPresets()\n        .map((p) => `\\`${p.name}\\` - ${p.description}`)\n        .join(\"\\n\");\n}\n\nmodule.exports = {\n    name: \"filter\",\n    aliases: [\"fx\", \"filters\"],\n    description: \"Apply Lavalink audio filters.\",\n    usage: \"filter <list|off|name>\",\n    async execute({ bot, message, args, reply }) {\n        const state = bot.music.get(message.guild.id);\n        if (!state || !state.player) {\n            await reply({\n                title: \"Not Connected\",\n                description: \"No active player. Play a song first.\"\n            });\n            return;\n        }"
+        },
+        {
+          "name": "help.js",
+          "language": "javascript",
+          "code": "const { MessageFlags } = require(\"discord.js\");\n\nconst COMPONENTS_V2_FLAG = MessageFlags?.IsComponentsV2 ?? (1 << 15);\nconst HELP_VIEW_TTL_MS = 20 * 60 * 1000;\nconst COMMANDS_PER_PAGE = 5;\nconst helpViews = new Map();\n\nconst FILTER_HELP_ITEMS = [\n    { name: \"filter list\", usage: \"filter list\", aliases: [\"fx list\", \"filters list\"], description: \"Show all available filter presets and current active filter.\" },\n    { name: \"filter off\", usage: \"filter off\", aliases: [\"filter reset\", \"filter clear\"], description: \"Disable all active filters and return to normal sound.\" },\n    { name: \"filter bassboost\", usage: \"filter bassboost\", aliases: [], description: \"Boost low frequencies for punchy bass.\" },\n    { name: \"filter vaporwave\", usage: \"filter vaporwave\", aliases: [], description: \"Slower dreamy tuning with detuned feel.\" },\n    { name: \"filter nightcore\", usage: \"filter nightcore\", aliases: [], description: \"Faster playback with higher pitch.\" },\n    { name: \"filter soft\", usage: \"filter soft\", aliases: [], description: \"Warm and smooth listening profile.\" },\n    { name: \"filter karaoke\", usage: \"filter karaoke\", aliases: [], description: \"Reduce center vocal frequencies.\" },\n    { name: \"filter treble\", usage: \"filter treble\", aliases: [], description: \"Enhance high frequencies and clarity.\" },\n    { name: \"filter 8d\", usage: \"filter 8d\", aliases: [], description: \"Apply rotating headphone-style stereo effect.\" },\n    { name: \"filter tremolo\", usage: \"filter tremolo\", aliases: [], description: \"Apply rhythmic volume wobble.\" },\n    { name: \"filter vibrato\", usage: \"filter vibrato\", aliases: [], description: \"Apply pitch wobble effect.\" },\n    { name: \"filter chipmunk\", usage: \"filter chipmunk\", aliases: [], description: \"Very high-pitch voice tuning.\" },\n    { name: \"filter slowed\", usage: \"filter slowed\", aliases: [], description: \"Slow and relaxed playback feel.\" },\n    { name: \"filter distorted\", usage: \"filter distorted\", aliases: [], description: \"Heavy rough distorted effect.\" },\n    { name: \"filter earrape\", usage: \"filter earrape\", aliases: [], description: \"Very loud aggressive EQ profile.\" },\n    { name: \"filter radio\", usage: \"filter radio\", aliases: [], description: \"Telephone/radio narrow-band effect.\" }\n];"
+        },
+        {
+          "name": "index.js",
+          "language": "javascript",
+          "code": "const fs = require(\"node:fs\");\nconst path = require(\"node:path\");\n\nfunction collectJsFiles(rootDir) {\n    if (!fs.existsSync(rootDir)) return [];\n\n    const out = [];\n    const entries = fs.readdirSync(rootDir, { withFileTypes: true });\n\n    for (const entry of entries) {\n        const full = path.join(rootDir, entry.name);\n        if (entry.isDirectory()) {\n            out.push(...collectJsFiles(full));\n            continue;\n        }\n\n        if (!entry.isFile()) continue;\n        if (!entry.name.endsWith(\".js\")) continue;\n        if (entry.name === \"index.js\") continue;\n\n        out.push(full);\n    }\n\n    return out;\n}"
+        },
+        {
+          "name": "loop.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"loop\",\n    aliases: [\"repeat\"],\n    description: \"Cycle loop mode: off -> track -> queue.\",\n    usage: \"loop\",\n    async execute({ bot, message, reply }) {\n        const mode = bot.music.cycleLoop(message.guild.id);\n        if (!mode) {\n            await reply({ title: \"Idle\", description: \"No active player.\" });\n            return;\n        }\n\n        await reply({\n            title: \"Loop Mode\",\n            description: `Loop mode is now **${mode}**.`\n        });\n    }\n};\n"
+        },
+        {
+          "name": "lyrics.js",
+          "language": "javascript",
+          "code": "const { MessageFlags } = require(\"discord.js\");\nconst { fetchLyrics, fetchLyricsByQuery, toHinglishLyrics } = require(\"../utils/lyrics\");\nconst { formatDuration } = require(\"../utils/format\");\n\nconst COMPONENTS_V2_FLAG = MessageFlags?.IsComponentsV2 ?? (1 << 15);\nconst VIEW_TTL_MS = 15 * 60 * 1000;\nconst MAX_PAGE_CHARS = 1800;\nconst MAX_STANZAS_PER_PAGE = 3;\nconst lyricsViews = new Map();\n\nfunction cleanupViews() {\n    const now = Date.now();\n    for (const [token, view] of lyricsViews) {\n        if (view.expiresAt <= now) lyricsViews.delete(token);\n    }\n}\n\nfunction makeToken() {\n    return Math.random().toString(36).slice(2, 10);\n}\n\nfunction shortText(value, max = 64) {\n    const text = String(value || \"Unknown\").trim();\n    if (!text) return \"Unknown\";\n    if (text.length <= max) return text;\n    return `${text.slice(0, max - 3)}...`;\n}"
+        },
+        {
+          "name": "noprefix.js",
+          "language": "javascript",
+          "code": "const { MessageFlags } = require(\"discord.js\");\nconst { buildContainerMessage } = require(\"../components/containerBuilder\");\nconst {\n    parseDurationValue,\n    setNoPrefixUser,\n    removeNoPrefixUser,\n    getNoPrefixRow,\n    getActiveNoPrefixUsers\n} = require(\"../database/noPrefix\");\nconst { sendNoPrefixLog, formatExpiry } = require(\"../services/noPrefixService\");\n\nconst COMPONENTS_V2_FLAG = MessageFlags?.IsComponentsV2 ?? (1 << 15);\nconst LIST_PAGE_SIZE = 4;\nconst LIST_VIEW_TTL_MS = 15 * 60 * 1000;\nconst READD_VIEW_TTL_MS = 10 * 60 * 1000;\n\nconst listViews = new Map();\nconst readdViews = new Map();\n\nconst DURATION_OPTIONS = [\n    { label: \"30 Minutes\", value: String(30 * 60 * 1000), description: \"Expires in 30 minutes\" },\n    { label: \"1 Week\", value: String(7 * 24 * 60 * 60 * 1000), description: \"Expires in 7 days\" },\n    { label: \"1 Month\", value: String(30 * 24 * 60 * 60 * 1000), description: \"Expires in 30 days\" },\n    { label: \"3 Months\", value: String(90 * 24 * 60 * 60 * 1000), description: \"Expires in 90 days\" },\n    { label: \"6 Months\", value: String(180 * 24 * 60 * 60 * 1000), description: \"Expires in 180 days\" },\n    { label: \"1 Year\", value: String(365 * 24 * 60 * 60 * 1000), description: \"Expires in 365 days\" },\n    { label: \"Permanent\", value: \"permanent\", description: \"No expiry\" }\n];"
+        },
+        {
+          "name": "play.js",
+          "language": "javascript",
+          "code": "const { ChannelType } = require(\"discord.js\");\n\nconst SEARCH_CACHE_TTL_MS = Math.max(5_000, Number(process.env.PLAY_SEARCH_CACHE_TTL_MS || 120_000));\nconst searchCache = new Map();\n\nfunction toLinkedTitle(track) {\n    const title = track?.title || \"Unknown Track\";\n    const url = track?.uri;\n    return url ? `[${title}](${url})` : title;\n}\n\nfunction nowMs() {\n    return Date.now();\n}\n\nfunction normalizeQueryForCache(query) {\n    return String(query || \"\").trim().toLowerCase();\n}\n\nfunction makeCacheKey(guildId, query, withSpotifyFallback) {\n    return `${guildId || \"global\"}:${withSpotifyFallback ? \"sp\" : \"std\"}:${normalizeQueryForCache(query)}`;\n}\n\nfunction cloneResult(res) {\n    if (!res) return res;\n    return {\n        ...res,\n        tracks: Array.isArray(res.tracks) ? res.tracks.map((t) => ({ ...t })) : []\n    };\n}"
+        },
+        {
+          "name": "pause.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"pause\",\n    aliases: [],\n    description: \"Pause playback.\",\n    usage: \"pause\",\n    async execute({ bot, message, reply }) {\n        const ok = await bot.music.pause(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Nothing Playing\", description: \"No active track.\" });\n            return;\n        }\n\n        await reply({ title: \"Paused\", description: \"Playback paused.\" });\n    }\n};\n"
+        },
+        {
+          "name": "resume.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"resume\",\n    aliases: [],\n    description: \"Resume playback.\",\n    usage: \"resume\",\n    async execute({ bot, message, reply }) {\n        const ok = await bot.music.resume(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Not Paused\", description: \"Playback is not paused.\" });\n            return;\n        }\n\n        await reply({ title: \"Resumed\", description: \"Playback resumed.\" });\n    }\n};\n"
+        },
+        {
+          "name": "skip.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"skip\",\n    aliases: [\"next\"],\n    description: \"Skip current track.\",\n    usage: \"skip\",\n    async execute({ bot, message, reply }) {\n        const ok = await bot.music.skip(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Nothing Playing\", description: \"No current track.\" });\n            return;\n        }\n\n        await reply({ title: \"Skipped\", description: \"Moved to next track.\" });\n    }\n};\n"
+        },
+        {
+          "name": "stop.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"stop\",\n    aliases: [],\n    description: \"Stop playback and clear queue.\",\n    usage: \"stop\",\n    async execute({ bot, message, reply }) {\n        const ok = await bot.music.stop(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Idle\", description: \"No active player.\" });\n            return;\n        }\n\n        await reply({ title: \"Stopped\", description: \"Queue cleared and playback stopped.\" });\n    }\n};\n"
         }
       ],
       "created_at": "2026-06-11T11:51:18.648Z",
@@ -47,6 +102,61 @@
           "name": "disconnect.js",
           "language": "javascript",
           "code": "const guildCooldowns = new Map();\nconst DISCONNECT_COOLDOWN_MS = 1200;\n\nmodule.exports = {\n    name: \"disconnect\",\n    aliases: [\"dc\", \"leave\"],\n    description: \"Disconnect bot from voice channel.\",\n    usage: \"disconnect\",\n    async execute({ bot, message, reply }) {\n        const now = Date.now();\n        const key = message.guild.id;\n        const last = guildCooldowns.get(key) || 0;\n        if (now - last < DISCONNECT_COOLDOWN_MS) {\n            return;\n        }\n        guildCooldowns.set(key, now);\n\n        const ok = await bot.music.disconnect(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Not Connected\", description: \"No active voice connection.\" });\n            return;\n        }\n\n        await reply({ title: \"Disconnected\", description: \"Left voice channel.\" });\n    }\n};\n"
+        },
+        {
+          "name": "filter.js",
+          "language": "javascript",
+          "code": "onst { listFilterPresets, getFilterPreset } = require(\"../filter\");\n\nfunction formatFilterList() {\n    return listFilterPresets()\n        .map((p) => `\\`${p.name}\\` - ${p.description}`)\n        .join(\"\\n\");\n}\n\nmodule.exports = {\n    name: \"filter\",\n    aliases: [\"fx\", \"filters\"],\n    description: \"Apply Lavalink audio filters.\",\n    usage: \"filter <list|off|name>\",\n    async execute({ bot, message, args, reply }) {\n        const state = bot.music.get(message.guild.id);\n        if (!state || !state.player) {\n            await reply({\n                title: \"Not Connected\",\n                description: \"No active player. Play a song first.\"\n            });\n            return;\n        }"
+        },
+        {
+          "name": "help.js",
+          "language": "javascript",
+          "code": "const { MessageFlags } = require(\"discord.js\");\n\nconst COMPONENTS_V2_FLAG = MessageFlags?.IsComponentsV2 ?? (1 << 15);\nconst HELP_VIEW_TTL_MS = 20 * 60 * 1000;\nconst COMMANDS_PER_PAGE = 5;\nconst helpViews = new Map();\n\nconst FILTER_HELP_ITEMS = [\n    { name: \"filter list\", usage: \"filter list\", aliases: [\"fx list\", \"filters list\"], description: \"Show all available filter presets and current active filter.\" },\n    { name: \"filter off\", usage: \"filter off\", aliases: [\"filter reset\", \"filter clear\"], description: \"Disable all active filters and return to normal sound.\" },\n    { name: \"filter bassboost\", usage: \"filter bassboost\", aliases: [], description: \"Boost low frequencies for punchy bass.\" },\n    { name: \"filter vaporwave\", usage: \"filter vaporwave\", aliases: [], description: \"Slower dreamy tuning with detuned feel.\" },\n    { name: \"filter nightcore\", usage: \"filter nightcore\", aliases: [], description: \"Faster playback with higher pitch.\" },\n    { name: \"filter soft\", usage: \"filter soft\", aliases: [], description: \"Warm and smooth listening profile.\" },\n    { name: \"filter karaoke\", usage: \"filter karaoke\", aliases: [], description: \"Reduce center vocal frequencies.\" },\n    { name: \"filter treble\", usage: \"filter treble\", aliases: [], description: \"Enhance high frequencies and clarity.\" },\n    { name: \"filter 8d\", usage: \"filter 8d\", aliases: [], description: \"Apply rotating headphone-style stereo effect.\" },\n    { name: \"filter tremolo\", usage: \"filter tremolo\", aliases: [], description: \"Apply rhythmic volume wobble.\" },\n    { name: \"filter vibrato\", usage: \"filter vibrato\", aliases: [], description: \"Apply pitch wobble effect.\" },\n    { name: \"filter chipmunk\", usage: \"filter chipmunk\", aliases: [], description: \"Very high-pitch voice tuning.\" },\n    { name: \"filter slowed\", usage: \"filter slowed\", aliases: [], description: \"Slow and relaxed playback feel.\" },\n    { name: \"filter distorted\", usage: \"filter distorted\", aliases: [], description: \"Heavy rough distorted effect.\" },\n    { name: \"filter earrape\", usage: \"filter earrape\", aliases: [], description: \"Very loud aggressive EQ profile.\" },\n    { name: \"filter radio\", usage: \"filter radio\", aliases: [], description: \"Telephone/radio narrow-band effect.\" }\n];"
+        },
+        {
+          "name": "index.js",
+          "language": "javascript",
+          "code": "const fs = require(\"node:fs\");\nconst path = require(\"node:path\");\n\nfunction collectJsFiles(rootDir) {\n    if (!fs.existsSync(rootDir)) return [];\n\n    const out = [];\n    const entries = fs.readdirSync(rootDir, { withFileTypes: true });\n\n    for (const entry of entries) {\n        const full = path.join(rootDir, entry.name);\n        if (entry.isDirectory()) {\n            out.push(...collectJsFiles(full));\n            continue;\n        }\n\n        if (!entry.isFile()) continue;\n        if (!entry.name.endsWith(\".js\")) continue;\n        if (entry.name === \"index.js\") continue;\n\n        out.push(full);\n    }\n\n    return out;\n}"
+        },
+        {
+          "name": "loop.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"loop\",\n    aliases: [\"repeat\"],\n    description: \"Cycle loop mode: off -> track -> queue.\",\n    usage: \"loop\",\n    async execute({ bot, message, reply }) {\n        const mode = bot.music.cycleLoop(message.guild.id);\n        if (!mode) {\n            await reply({ title: \"Idle\", description: \"No active player.\" });\n            return;\n        }\n\n        await reply({\n            title: \"Loop Mode\",\n            description: `Loop mode is now **${mode}**.`\n        });\n    }\n};\n"
+        },
+        {
+          "name": "lyrics.js",
+          "language": "javascript",
+          "code": "const { MessageFlags } = require(\"discord.js\");\nconst { fetchLyrics, fetchLyricsByQuery, toHinglishLyrics } = require(\"../utils/lyrics\");\nconst { formatDuration } = require(\"../utils/format\");\n\nconst COMPONENTS_V2_FLAG = MessageFlags?.IsComponentsV2 ?? (1 << 15);\nconst VIEW_TTL_MS = 15 * 60 * 1000;\nconst MAX_PAGE_CHARS = 1800;\nconst MAX_STANZAS_PER_PAGE = 3;\nconst lyricsViews = new Map();\n\nfunction cleanupViews() {\n    const now = Date.now();\n    for (const [token, view] of lyricsViews) {\n        if (view.expiresAt <= now) lyricsViews.delete(token);\n    }\n}\n\nfunction makeToken() {\n    return Math.random().toString(36).slice(2, 10);\n}\n\nfunction shortText(value, max = 64) {\n    const text = String(value || \"Unknown\").trim();\n    if (!text) return \"Unknown\";\n    if (text.length <= max) return text;\n    return `${text.slice(0, max - 3)}...`;\n}"
+        },
+        {
+          "name": "noprefix.js",
+          "language": "javascript",
+          "code": "const { MessageFlags } = require(\"discord.js\");\nconst { buildContainerMessage } = require(\"../components/containerBuilder\");\nconst {\n    parseDurationValue,\n    setNoPrefixUser,\n    removeNoPrefixUser,\n    getNoPrefixRow,\n    getActiveNoPrefixUsers\n} = require(\"../database/noPrefix\");\nconst { sendNoPrefixLog, formatExpiry } = require(\"../services/noPrefixService\");\n\nconst COMPONENTS_V2_FLAG = MessageFlags?.IsComponentsV2 ?? (1 << 15);\nconst LIST_PAGE_SIZE = 4;\nconst LIST_VIEW_TTL_MS = 15 * 60 * 1000;\nconst READD_VIEW_TTL_MS = 10 * 60 * 1000;\n\nconst listViews = new Map();\nconst readdViews = new Map();\n\nconst DURATION_OPTIONS = [\n    { label: \"30 Minutes\", value: String(30 * 60 * 1000), description: \"Expires in 30 minutes\" },\n    { label: \"1 Week\", value: String(7 * 24 * 60 * 60 * 1000), description: \"Expires in 7 days\" },\n    { label: \"1 Month\", value: String(30 * 24 * 60 * 60 * 1000), description: \"Expires in 30 days\" },\n    { label: \"3 Months\", value: String(90 * 24 * 60 * 60 * 1000), description: \"Expires in 90 days\" },\n    { label: \"6 Months\", value: String(180 * 24 * 60 * 60 * 1000), description: \"Expires in 180 days\" },\n    { label: \"1 Year\", value: String(365 * 24 * 60 * 60 * 1000), description: \"Expires in 365 days\" },\n    { label: \"Permanent\", value: \"permanent\", description: \"No expiry\" }\n];"
+        },
+        {
+          "name": "play.js",
+          "language": "javascript",
+          "code": "const { ChannelType } = require(\"discord.js\");\n\nconst SEARCH_CACHE_TTL_MS = Math.max(5_000, Number(process.env.PLAY_SEARCH_CACHE_TTL_MS || 120_000));\nconst searchCache = new Map();\n\nfunction toLinkedTitle(track) {\n    const title = track?.title || \"Unknown Track\";\n    const url = track?.uri;\n    return url ? `[${title}](${url})` : title;\n}\n\nfunction nowMs() {\n    return Date.now();\n}\n\nfunction normalizeQueryForCache(query) {\n    return String(query || \"\").trim().toLowerCase();\n}\n\nfunction makeCacheKey(guildId, query, withSpotifyFallback) {\n    return `${guildId || \"global\"}:${withSpotifyFallback ? \"sp\" : \"std\"}:${normalizeQueryForCache(query)}`;\n}\n\nfunction cloneResult(res) {\n    if (!res) return res;\n    return {\n        ...res,\n        tracks: Array.isArray(res.tracks) ? res.tracks.map((t) => ({ ...t })) : []\n    };\n}"
+        },
+        {
+          "name": "pause.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"pause\",\n    aliases: [],\n    description: \"Pause playback.\",\n    usage: \"pause\",\n    async execute({ bot, message, reply }) {\n        const ok = await bot.music.pause(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Nothing Playing\", description: \"No active track.\" });\n            return;\n        }\n\n        await reply({ title: \"Paused\", description: \"Playback paused.\" });\n    }\n};\n"
+        },
+        {
+          "name": "resume.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"resume\",\n    aliases: [],\n    description: \"Resume playback.\",\n    usage: \"resume\",\n    async execute({ bot, message, reply }) {\n        const ok = await bot.music.resume(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Not Paused\", description: \"Playback is not paused.\" });\n            return;\n        }\n\n        await reply({ title: \"Resumed\", description: \"Playback resumed.\" });\n    }\n};\n"
+        },
+        {
+          "name": "skip.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"skip\",\n    aliases: [\"next\"],\n    description: \"Skip current track.\",\n    usage: \"skip\",\n    async execute({ bot, message, reply }) {\n        const ok = await bot.music.skip(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Nothing Playing\", description: \"No current track.\" });\n            return;\n        }\n\n        await reply({ title: \"Skipped\", description: \"Moved to next track.\" });\n    }\n};\n"
+        },
+        {
+          "name": "stop.js",
+          "language": "javascript",
+          "code": "module.exports = {\n    name: \"stop\",\n    aliases: [],\n    description: \"Stop playback and clear queue.\",\n    usage: \"stop\",\n    async execute({ bot, message, reply }) {\n        const ok = await bot.music.stop(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Idle\", description: \"No active player.\" });\n            return;\n        }\n\n        await reply({ title: \"Stopped\", description: \"Queue cleared and playback stopped.\" });\n    }\n};\n"
         }
       ]
     },
@@ -93,6 +203,17 @@
   ],
   "nextId": 3,
   "audit": [
+    {
+      "id": 8,
+      "created_at": "2026-06-12T08:26:01.822Z",
+      "action": "update-bot",
+      "actor": "admin",
+      "target_type": "bot",
+      "target_id": 2,
+      "payload": {
+        "title": "Tsukina | Discord Music System"
+      }
+    },
     {
       "id": 7,
       "created_at": "2026-06-12T07:45:42.284Z",
