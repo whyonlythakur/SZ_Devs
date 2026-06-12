@@ -29,6 +29,11 @@
           "name": "autoplay.js",
           "language": "javascript",
           "code": "module.exports = {\n    name: \"autoplay\",\n    aliases: [\"ap\"],\n    description: \"Toggle automatic similar-song playback when queue ends.\",\n    usage: \"autoplay <on|off|status>\",\n\n    async execute({ bot, message, args, reply }) {\n        const mode = String(args[0] || \"status\").toLowerCase();\n\n        const hasPremium = await bot.music.hasPremiumAccess(message.author.id).catch(() => false);\n        if (!hasPremium) {\n            await reply({\n                title: \"Premium Required\",\n                description: \"Autoplay is available for vote premium and buy premium users only.\"\n            });\n            return;\n        }\n\n        if (![\"on\", \"off\", \"status\"].includes(mode)) {\n            await reply({\n                title: \"Invalid Option\",\n                description: \"Use `autoplay on`, `autoplay off`, or `autoplay status`.\"\n            });\n            return;\n        }\n"
+        },
+        {
+          "name": "disconnect.js",
+          "language": "javascript",
+          "code": "const guildCooldowns = new Map();\nconst DISCONNECT_COOLDOWN_MS = 1200;\n\nmodule.exports = {\n    name: \"disconnect\",\n    aliases: [\"dc\", \"leave\"],\n    description: \"Disconnect bot from voice channel.\",\n    usage: \"disconnect\",\n    async execute({ bot, message, reply }) {\n        const now = Date.now();\n        const key = message.guild.id;\n        const last = guildCooldowns.get(key) || 0;\n        if (now - last < DISCONNECT_COOLDOWN_MS) {\n            return;\n        }\n        guildCooldowns.set(key, now);\n\n        const ok = await bot.music.disconnect(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Not Connected\", description: \"No active voice connection.\" });\n            return;\n        }\n\n        await reply({ title: \"Disconnected\", description: \"Left voice channel.\" });\n    }\n};\n"
         }
       ],
       "created_at": "2026-06-11T11:51:18.648Z",
@@ -37,6 +42,11 @@
           "name": "autoplay.js",
           "language": "javascript",
           "code": "module.exports = {\n    name: \"autoplay\",\n    aliases: [\"ap\"],\n    description: \"Toggle automatic similar-song playback when queue ends.\",\n    usage: \"autoplay <on|off|status>\",\n\n    async execute({ bot, message, args, reply }) {\n        const mode = String(args[0] || \"status\").toLowerCase();\n\n        const hasPremium = await bot.music.hasPremiumAccess(message.author.id).catch(() => false);\n        if (!hasPremium) {\n            await reply({\n                title: \"Premium Required\",\n                description: \"Autoplay is available for vote premium and buy premium users only.\"\n            });\n            return;\n        }\n\n        if (![\"on\", \"off\", \"status\"].includes(mode)) {\n            await reply({\n                title: \"Invalid Option\",\n                description: \"Use `autoplay on`, `autoplay off`, or `autoplay status`.\"\n            });\n            return;\n        }\n"
+        },
+        {
+          "name": "disconnect.js",
+          "language": "javascript",
+          "code": "const guildCooldowns = new Map();\nconst DISCONNECT_COOLDOWN_MS = 1200;\n\nmodule.exports = {\n    name: \"disconnect\",\n    aliases: [\"dc\", \"leave\"],\n    description: \"Disconnect bot from voice channel.\",\n    usage: \"disconnect\",\n    async execute({ bot, message, reply }) {\n        const now = Date.now();\n        const key = message.guild.id;\n        const last = guildCooldowns.get(key) || 0;\n        if (now - last < DISCONNECT_COOLDOWN_MS) {\n            return;\n        }\n        guildCooldowns.set(key, now);\n\n        const ok = await bot.music.disconnect(message.guild.id);\n        if (!ok) {\n            await reply({ title: \"Not Connected\", description: \"No active voice connection.\" });\n            return;\n        }\n\n        await reply({ title: \"Disconnected\", description: \"Left voice channel.\" });\n    }\n};\n"
         }
       ]
     },
@@ -83,6 +93,17 @@
   ],
   "nextId": 3,
   "audit": [
+    {
+      "id": 7,
+      "created_at": "2026-06-12T07:45:42.284Z",
+      "action": "update-bot",
+      "actor": "admin",
+      "target_type": "bot",
+      "target_id": 2,
+      "payload": {
+        "title": "Tsukina | Discord Music System"
+      }
+    },
     {
       "id": 6,
       "created_at": "2026-06-12T07:45:04.459Z",
